@@ -81,6 +81,8 @@ exports.config = {
                 '--start-maximized'
             ],
             prefs: {
+                'profile.managed_default_content_settings.popups' : 2,
+                'profile.managed_default_content_settings.notifications' : 2,
                 download: {
                     'prompt_for_download': false,
                     'directory_upgrade': true,
@@ -212,8 +214,14 @@ exports.config = {
      * @param {Array.<Object>} capabilities list of capabilities details
      * @param {Array.<String>} specs List of spec file paths that are to be run
      */
-    // beforeSession: function (config, capabilities, specs) {
-    // },
+    beforeSession: function (config, capabilities, specs) {
+        /* global.allData = { postsData: [] };
+        
+        if(fs.existsSync('postsData.json')) {
+            global.allData = fs.readFileSync('postsData.json', 'utf8');
+            global.allData = JSON.parse(global.allData);
+        } */
+    },
     /**
      * Gets executed before test execution begins. At this point you can access to all global
      * variables like `browser`. It is the perfect place to define custom commands.
