@@ -1,0 +1,26 @@
+{
+  "name": "tlv-appartments",
+  "version": "1.0.0",
+  "description": "",
+  "main": "run.js",
+  "dependencies": {
+    "chromedriver": "^93.0.1",
+    "fs": "^0.0.1-security",
+    "node-telegram-bot-api": "^0.54.0",
+    "wdio-chromedriver-service": "^7.2.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "npx wdio run ./wdio.conf.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/razielron/tlv-appartments.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/razielron/tlv-appartments/issues"
+  },
+  "homepage": "https://github.com/razielron/tlv-appartments#readme"
+}

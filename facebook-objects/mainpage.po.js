@@ -1,4 +1,4 @@
-
+const saveData = require('../save-data');
 
 class MainPage {
     constructor() {
@@ -87,48 +87,43 @@ class MainPage {
         }
         console.log('999999999999999999999999999999')
         let postData = {postNum, postUrl, postText};
+        saveData(postData);
         console.log({postData});
     }
 
-    async goOverArticles(maxArticles = 100) {
+    async goOverArticles(maxArticles = 10) {
         let numOfPosts = 0, postText, currentPost, allPosts, postLinkElem, postLink;
         
-        while(true) {
-            for(let i = 0; i < maxArticles; i++) {
-                console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-                await browser.waitUntil(async ()=> {
+        for(let i = 0; i < maxArticles; i++) {
+            console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+            await browser.waitUntil(async ()=> {
+                allPosts = await this.allArticles;
+                numOfPosts = allPosts.length;
+                console.log({numOfPosts})
+                return numOfPosts > 0;
+            }, {timeout: 60000});
+            console.log('1111111111111111111111111')
+            await browser.waitUntil(async ()=> {
+                if(i > numOfPosts - 1) { 
+                    console.log('22222222222222222222222222222')
+                    console.log({i})
+                    console.log({numOfPosts})
                     allPosts = await this.allArticles;
                     numOfPosts = allPosts.length;
-                    console.log({numOfPosts})
-                    return numOfPosts > 0;
-                }, {timeout: 60000});
-                console.log('1111111111111111111111111')
-                await browser.waitUntil(async ()=> {
-                    if(i > numOfPosts - 1) { 
-                        console.log('22222222222222222222222222222')
-                        console.log({i})
-                        console.log({numOfPosts})
-                        allPosts = await this.allArticles;
-                        numOfPosts = allPosts.length;
-                        currentPost = allPosts[numOfPosts - 1];
-                        await currentPost.scrollIntoView();
-                        await browser.pause(2000);
-                        return false;
-                    } else {
-                        return true;
-                    }
-                }, {timeout: 60000});
-                
-                currentPost = await this.allArticles[i];
+                    currentPost = allPosts[numOfPosts - 1];
+                    await currentPost.scrollIntoView();
+                    await browser.pause(2000);
+                    return false;
+                } else {
+                    return true;
+                }
+            }, {timeout: 60000});
+            
+            currentPost = await this.allArticles[i];
 
-                console.log('3333333333333333333333333')
-                await this.openSinglePost(currentPost, i);
-            }
-
-            await browser.refresh();
-            await browser.pause(5000);
+            console.log('3333333333333333333333333')
+            await this.openSinglePost(currentPost, i);
         }
-
     }
 
     async holdDownKey(character) {
