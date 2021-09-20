@@ -18,7 +18,7 @@ module.exports = function saveToFile(postData) {
     }
 
     if(!isAlreadySaved) {
-        bot.sendMessage(data.channelId, postData.postUrl);
+        bot.sendMessage(data.channelId, postData.postUrl, {disable_web_page_preview: true});
         allData.postsData.push(postData);
         allData = JSON.stringify(allData);
         fs.writeFileSync('postsData.json', allData);
