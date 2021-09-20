@@ -1,4 +1,4 @@
-const saveData = require('../save-data');
+const { saveToFile } = require('../save-data');
 
 class MainPage {
     constructor() {
@@ -20,6 +20,17 @@ class MainPage {
                 return await elem.$('a[class="oajrlxb2 g5ia77u1 qu0x051f esr5mh6w e9989ue4 r7d6kgcz rq0escxv nhd2j8a9 nc684nl6 p7hjln8o kvgmc6g5 cxmmr5t8 oygrvhab hcukyx3x jb3vyjys rz4wbd8a qt6c0cv9 a8nywdso i1ao9s8h esuyzwwr f1sip0of lzcic4wl gmql0nx0 gpro0wi8 b1v8xokw"]')
                 .isExisting();
             });
+    }
+    get arrowDropDown() { return $('div[class="rq0escxv l9j0dhe7 du4w35lb j83agx80 pfnyh3mw i1fnvgqd bp9cbjyn owycx6da btwxx1t3 jeutjz8y"]'); }
+    get sortOptions() { return $$('div[role="menuitemradio"]'); }
+
+    async sortByRecent() {
+        await this.arrowDropDown.waitForExist({timeout: 60000});
+        await this.arrowDropDown.scrollIntoView();
+        await this.arrowDropDown.click();
+        await browser.pause(100);
+        await this.sortOptions[1].click();
+        await browser.pause(200);
     }
 
     async openGroups() {
@@ -87,7 +98,7 @@ class MainPage {
         }
         console.log('999999999999999999999999999999')
         let postData = {postNum, postUrl, postText};
-        saveData(postData);
+        saveToFile(postData);
         console.log({postData});
     }
 
