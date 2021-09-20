@@ -4,7 +4,8 @@
   "description": "",
   "main": "wdio.conf.js",
   "scripts": {
-    "test": "npx wdio run ./wdio.conf.js"
+    "test": "npx wdio run ./wdio.conf.js",
+    "cron": "node cron.js"
   },
   "repository": {
     "type": "git",
