@@ -14,6 +14,8 @@ class MainPage {
     get doneButton() { return $('div[aria-label="Done"]'); }
     async getLink(elem) { return await elem.$('a[class="oajrlxb2 g5ia77u1 qu0x051f esr5mh6w e9989ue4 r7d6kgcz rq0escxv nhd2j8a9 nc684nl6 p7hjln8o kvgmc6g5 cxmmr5t8 oygrvhab hcukyx3x jb3vyjys rz4wbd8a qt6c0cv9 a8nywdso i1ao9s8h esuyzwwr f1sip0of lzcic4wl gmql0nx0 gpro0wi8 b1v8xokw"]'); }
     async getAllLinks(elem) { return await elem.$$('a[class="oajrlxb2 g5ia77u1 qu0x051f esr5mh6w e9989ue4 r7d6kgcz rq0escxv nhd2j8a9 nc684nl6 p7hjln8o kvgmc6g5 cxmmr5t8 oygrvhab hcukyx3x jb3vyjys rz4wbd8a qt6c0cv9 a8nywdso i1ao9s8h esuyzwwr f1sip0of lzcic4wl gmql0nx0 gpro0wi8 b1v8xokw"]'); }
+    //async getLinkHover(elem) { return await elem.$('span[class="d2edcug0 hpfvmrgz qv66sw1b c1et5uql lr9zc1uh a8c37x1j keod5gw0 nxhoafnm aigsh9s9 d9wwppkn fe6kdd0r mau55g9w c8b282yb mdeji52x e9vueds3 j5wam9gi b1v8xokw m9osqain hzawbc8m"]>span'); }
+    //async getLinkHover2(elem) { return await elem.$('span[class="j1lvzwm4 stjgntxs ni8dbmo4 q9uorilb gpro0wi8"]'); }
     async getLink2(elem) { 
         return await elem.$$('span[class="tojvnm2t a6sixzi8 abs2jz4q a8s20v7p t1p8iaqh k5wvi7nf q3lfd5jv pk4s997a bipmatt0 cebpdrjk qowsmv63 owwhemhu dp1hu0rb dhp61c6y iyyx5f41"]')
             .filter(async (elem) => {
@@ -27,6 +29,7 @@ class MainPage {
     async sortByRecent() {
         await this.arrowDropDown.waitForExist({timeout: 60000});
         await this.arrowDropDown.scrollIntoView();
+        await this.arrowDropDown.waitForDisplayed({timeout: 60000});
         await this.arrowDropDown.click();
         await browser.pause(100);
         await this.sortOptions[1].click();
@@ -60,8 +63,17 @@ class MainPage {
 
     async openSinglePost(currentPost, postNum) {
         console.log('55555555555555555555555555555')
+        await currentPost.scrollIntoView();
         let postLinkElem = await this.getAllLinks(currentPost);
+        /* let hover = await this.getLinkHover(currentPost);
+        await browser.pause(5000)
+        await hover.moveTo();
+        await browser.pause(5000)
+        console.log(postLinkElem)
+        console.log(await postLinkElem[0].getAttribute('href'));
+        console.log(await postLinkElem[0].getProperty('href'));
         console.log(postLinkElem.length)
+        await browser.pause(1000000) */
         if(postLinkElem.length > 0) {
             console.log('666666666666666666666666666')
             await postLinkElem[0].waitForExist({timeout: 60000});
