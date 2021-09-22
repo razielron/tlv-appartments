@@ -12,6 +12,6 @@ module.exports = {
     allDataPath: 'postsData.json',
     unmatchPath: 'unmatchData.json',
     singlePostPath: 'one_post.json',
-    singlePostResult: 'result.json',
+    singlePostResultPath: 'result.json',
     pythonScriptSinglePost: './filtering/filter_words.py "one_post.json"'
 }
