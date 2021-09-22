@@ -1,4 +1,4 @@
-const Creds = require('../data');
+const Creds = require('../creds');
 
 class Login {
     constructor() {

@@ -12,6 +12,7 @@ for(let i = 0; i < data.groups.length; i++) {
     describe(`Run Group: ${data.groups[i]}`, () => {
         it('Open group', async () => {
             await MainPage.openSpecificGroup(data.groups[i]);
+            await browser.pause(5000);
         });
 
         it('Sort Posts By Most Recent', async () => {
