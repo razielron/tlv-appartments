@@ -4,9 +4,10 @@
   "description": "",
   "main": "wdio.conf.js",
   "scripts": {
-    "save-data": "node save-data.js",
-    "test": "npx wdio run ./wdio.conf.js",
-    "cron": "node cron.js"
+    "cron": "node cron.js",
+    "automation": "npx wdio run ./wdio.conf.js",
+    "filter-single-post": "py .\\filtering\\filter_words.py \"one_post.json\"",
+    "save-data": "node save-data.js"
   },
   "repository": {
     "type": "git",
