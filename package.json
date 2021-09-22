@@ -4,6 +4,7 @@
   "description": "",
   "main": "wdio.conf.js",
   "scripts": {
+    "save-data": "node save-data.js",
     "test": "npx wdio run ./wdio.conf.js",
     "cron": "node cron.js"
   },
