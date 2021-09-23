@@ -1,6 +1,7 @@
 import json
 import sys
 import nltk
+import time
 nltk.download('punkt')
 from nltk.tokenize import word_tokenize
 
@@ -41,12 +42,13 @@ def get_numbers(filename):
   return True
 
 
-def next_q(current_q, word):
-  for key in current_q:    
-    for w in current_q[key]:
+def get_next_state(current_q, word):
+  for state in current_q:    
+    for w in current_q[state]:
       if w == word:
-        return key
-  return 'q0'
+        return state, word
+
+  return 'q0', word
 
 
 def check_post(post):
@@ -54,35 +56,56 @@ def check_post(post):
 
 
 def check_words(words):
-  current_q = "q0"
+  current_state = "q0"
+  next_state = ""
+  matched_word = ""
+  state_arr = [{"state": current_state, "matched_word": ""}]
+
   with open(CONST.filters_file, 'r', encoding="utf8") as file:
       filters = json.load(file)
+
+  start = time.time()
+
   for word in words:
-      current_q = next_q(filters[current_q], word)
-      if current_q == 'q2':
+      next_state, matched_word = get_next_state(filters[current_state], word)
+
+      if current_state != next_state:
+        state_arr.append({"state": next_state, "matched_word": matched_word})
+
+      if next_state == 'q2':
         break
-  print(current_q)
-  return current_q    
+
+      current_state = next_state
+
+  end = time.time()
+  
+  print(next_state)
+  print(end - start)
+  return state_arr
 
 
 def get_post(filepath):
   post = None
+
   with open(filepath, 'r', encoding="utf8") as file:
       post = json.load(file)
+
   return post
 
 
 def save_result(result):
   result = {
-    "result": result
+    "isMatch": result[-1]['state'] != "q2",
+    "state_arr": result
   }
+
   with open('result.json', 'w', encoding='utf-8') as f:
     json.dump(result, f, ensure_ascii=False, indent=4)
 
 
 def online_flow(path):
   post = get_post(path)
-  result = check_post(post) != "q2"
+  result = check_post(post)
   save_result(result)
 
 
@@ -90,8 +113,10 @@ def online_flow(path):
 def main():
   with open(CONST.postsData, 'r', encoding="utf8") as content:
     allData = json.load(content)
+
   #my_words = ['ןיידע', 'תיטנוולר', 'הפלחהל', 'דבלב', 'עיצמ', 'תריד', 'רדח', 'יצחו', 'תספרמ', 'הרוגס', 'רדח', 'שממ', 'לודג', 'חבטמ', 'תספרמו', 'הרוגס', 'עגרכ', 'ינא', 'שמתשמ', 'תספרמב', 'רותב', 'רדח', 'הניש', 'לבא', 'רשפא', 'תונשל', 'ליבשב', 'רדח', 'קנע', 'תספרמו', 'הווש', 'מ', 'ר', 'והימריב', 'ןופצ', 'ןשי', 'שממ', 'לע', 'ףוגניזיד/קראפ/םיה', '0053-ב', 'דע', 'םויס', 'הזוחה', 'ףוסב', 'רבמצד', 'ןבומכ', 'םע', 'היצפוא', 'הכראהל', 'לומ', 'לעבה', 'תיב', 'הרידה', 'רפוס', 'תראומ', 'המוקב', 'אלל', 'םע', 'חבטמ', 'דרפנ', 'ללוכ', 'זג', 'תתתיקנע', 'דיחיל', 'המיאתמ', 'םג', 'גוזל', 'שי', 'היצפוא', 'תונקל', 'קלח', 'טוהירהמ', 'ללוכ', 'תנוכמ', 'הסיבכ', 'לבא', 'שממ', 'אל', 'הבוח', 'שפחמ', 'תריד', 'םירדח', 'גוזל', 'תוחפל', 'מ', 'ר', 'םע', 'חבטמ', 'חוורמ', 'תופידע', 'תחאל', 'םע', 'תספרמ', 'וא', 'רצח', 'ןורתי', 'קנע', 'םא', 'שי', 'הינח', 'רוזיאב', 'ןופצ', 'שדח/ןשי', 'יד', 'םישימג', 'רוזיאב', 'זא', 'לא', 'וססהת', 'עיצהל', 'דע']
   #my_words = [word[::-1] for word in my_words]
+
   for post in allData['postsData']:
     print(post['postUrl'])
     post_words = get_words(post['postText'])  
@@ -101,11 +126,14 @@ def main():
     #handles bad flow:
     current_q = "q0"
     for word in post_words:
-      current_q = next_q(filters[current_q], word)
+      current_q = get_next_state(filters[current_q], word)
       if current_q == 'q2':
         break
-    print(current_q)    
-  #check_post(my_words)
+    print(current_q)
+
+  print("state_arr")
+  state_arr = check_post(allData['postsData'][0])
+  print(state_arr)
 
 
 if __name__ == "__main__":

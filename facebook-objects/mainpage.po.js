@@ -1,4 +1,4 @@
-const { saveToFile } = require('../save-data');
+const { CheckAndSavePost } = require('../save-data');
 
 class MainPage {
     constructor() {
@@ -110,7 +110,7 @@ class MainPage {
         }
         console.log('999999999999999999999999999999')
         let postData = {postNum, postUrl, postText};
-        saveToFile(postData);
+        CheckAndSavePost(postData);
         console.log({postData});
     }
 
