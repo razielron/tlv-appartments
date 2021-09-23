@@ -39,7 +39,6 @@ def get_words(content):
   return hebrew_words
 
 
-
 def get_numbers(filename):
   return True
 
