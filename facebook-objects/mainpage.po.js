@@ -65,15 +65,7 @@ class MainPage {
         console.log('55555555555555555555555555555')
         await currentPost.scrollIntoView();
         let postLinkElem = await this.getAllLinks(currentPost);
-        /* let hover = await this.getLinkHover(currentPost);
-        await browser.pause(5000)
-        await hover.moveTo();
-        await browser.pause(5000)
-        console.log(postLinkElem)
-        console.log(await postLinkElem[0].getAttribute('href'));
-        console.log(await postLinkElem[0].getProperty('href'));
-        console.log(postLinkElem.length)
-        await browser.pause(1000000) */
+
         if(postLinkElem.length > 0) {
             console.log('666666666666666666666666666')
             await postLinkElem[0].waitForExist({timeout: 60000});
@@ -93,7 +85,7 @@ class MainPage {
     }
 
     async getDataofSinglePost(postNum) {
-        let allPosts, currentPost, postText, postUrl, numOfPosts;
+        let allPosts, currentPost, postText, numOfPosts, postUrl, postUrl2;
         console.log('777777777777777777777777777')
         await browser.waitUntil(async ()=> {
             console.log('8888888888888888888888888888888')
@@ -111,7 +103,28 @@ class MainPage {
         console.log('999999999999999999999999999999')
         let postData = {postNum, postUrl, postText};
         CheckAndSavePost(postData);
-        console.log({postData});
+        //console.log({postData});
+    }
+
+    async getPostDataFromGroup(currentPost, postNum) {
+        let postUrlElem, postUrl, postText, postData;
+
+        postUrlElem = await this.getAllLinks(currentPost);
+
+        if(postUrlElem.length > 0) {
+            postUrlElem = postUrlElem[0];
+            await postUrlElem.scrollIntoView(false);
+            await postUrlElem.moveTo(0,0);
+            postUrl = await postUrlElem.getAttribute('href');
+            
+            postUrl = postUrl.split('?')[0];
+            postText = await currentPost.getText();
+            postData = {postNum, postUrl, postText};
+            console.log({postUrl});
+
+            if(postUrl !== '#')
+                CheckAndSavePost(postData);
+        }
     }
 
     async goOverArticles(maxArticles = 10) {
@@ -125,6 +138,7 @@ class MainPage {
                 console.log({numOfPosts})
                 return numOfPosts > 0;
             }, {timeout: 60000});
+
             console.log('1111111111111111111111111')
             await browser.waitUntil(async ()=> {
                 if(i > numOfPosts - 1) { 
@@ -145,7 +159,8 @@ class MainPage {
             currentPost = await this.allArticles[i];
 
             console.log('3333333333333333333333333')
-            await this.openSinglePost(currentPost, i);
+            await this.getPostDataFromGroup(currentPost, i);
+            // await this.openSinglePost(currentPost, i);
         }
     }
 
