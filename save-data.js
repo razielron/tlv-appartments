@@ -7,6 +7,7 @@ const { result } = require('lodash');
 const { exec } = require("child_process");
 
 const bot = new TelegramBot(creds.telegramToken, {polling: true});
+let MatchPostsCount = 0, UnmatchPostsCount = 0;
 
 const syncWait = ms => {
     const end = Date.now() + ms
@@ -55,7 +56,7 @@ function isMatch(postData) {
     postData['isMatch'] = result['isMatch'];
     
     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RESULT @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-    console.log({postData});
+    // console.log({postData});
     console.log({post_url: postData.postUrl, ...result});
     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RESULT @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 
@@ -74,8 +75,9 @@ function saveMatch(allData, postData) {
     fs.writeFileSync(data.allDataPath, JSON.stringify(allData));
 }
 
-function sendMatchData(postData) {
-    bot.sendMessage(data.channelId, postData.postUrl, {disable_web_page_preview: true});
+function sendMatchData(postData) { 
+    let message = `${MatchPostsCount}\n${postData.postUrl}`;
+    bot.sendMessage(data.channelId, message, {disable_web_page_preview: true});
 }
 
 function CheckAndSavePost(postData) {
@@ -97,12 +99,17 @@ function CheckAndSavePost(postData) {
         postData = isMatch(postData)
 
         if(postData['isMatch']) {
+            MatchPostsCount++
             sendMatchData(postData);
             saveMatch(allData, postData);
         } else {
+            UnmatchPostsCount++;
             saveUnmatch(unmatchData, postData);
         }
     }
+
+    console.log(`Match Posts: ${MatchPostsCount}`);
+    console.log(`Match Posts: ${UnmatchPostsCount}`);
 }
 
 postData = {"postNum":0,"postUrl":"https://www.facebook.com/groups/1611176712488861/posts/3003441243262394/","postText":"Hostel BU93 shared a post.\n7\nt\nc\nS\ne\nh\no\nn\ns\n  ·\nSleeping in a sukkah all week? We have a better plan. Come stay with us only minutes from Gordon Beach to make your holiday that much better. Hostel beds priced at only 69 NIS per night. For a special Sukkot deal: book 10 nights and get 5% off your total booking! Relax on the beach all day and bar hop all night. What's a better way to celebrate??\nCall or text +9720584129266 (English) +9720542227141 (Hebrew) or visit our site to reserve\nישנים כל השבוע בסוכה? יש לנו תוכנית טובה יותר. בוא להישאר איתנו רק דקות מחוף גורדון כדי להפוך את החופשה שלך להרבה יותר טובה. מיטות הוסטל במחיר של 69 ₪ בלבד ללילה. לעסקת סוכות מיוחדת: הזמינו 10 לילות וקבלו 5% הנחה על כל ההזמנה! תירגע על החוף כל היום ובר הופ כל הלילה. איזו דרך טובה יותר לחגוג ??\nהתקשר או שלח הודעה +9720584129266 (אנגלית) +9720542227141 (עברית) או בקר באתרנו להזמין מקום\nLike\nComment\n0 Comments\nWrite a comment…"}
