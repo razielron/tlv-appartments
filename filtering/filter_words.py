@@ -16,10 +16,10 @@ def constant(f):
 class _Const(object):
     @constant
     def filters_file():
-        return 'filtering/filters.json'
+      return 'filtering/filters.json'
     @constant
     def postsData():
-        return 'postsData.json'
+      return 'postsData.json'
     def check_file():
       return 'check.json'
 
@@ -33,6 +33,8 @@ def get_words(content):
   text = content.strip()
   tokens = word_tokenize(text)
   hebrew_words = [w for w in tokens if w and any(ord(c) > 127 and c.isalpha() for c in w)]
+  print(hebrew_words)
+  print('backwords:')
   print([word[::-1] for word in hebrew_words])  #Prints the post with hebrew flipped words
   return hebrew_words
 
@@ -45,7 +47,7 @@ def get_numbers(filename):
 def get_next_state(current_q, word):
   for state in current_q:    
     for w in current_q[state]:
-      if w == word:
+      if w in word:
         return state, word
 
   return 'q0', word
