@@ -2,8 +2,6 @@ const fs = require('fs');
 const creds = require('./creds');
 const data = require('./data');
 const TelegramBot = require('node-telegram-bot-api');
-const {PythonShell} = require('python-shell');
-const { result } = require('lodash');
 const { exec } = require("child_process");
 
 const bot = new TelegramBot(creds.telegramToken, {polling: true});
