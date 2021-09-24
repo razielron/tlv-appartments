@@ -22,10 +22,12 @@
   "dependencies": {
     "@wdio/cli": "^7.12.6",
     "@wdio/repl": "^7.12.5",
+    "axios": "^0.21.4",
     "child_process": "^1.0.2",
     "cron": "^1.8.2",
     "fs": "0.0.1-security",
-    "node-telegram-bot-api": "^0.54.0"
+    "node-telegram-bot-api": "^0.54.0",
+    "string-similarity": "^4.0.4"
   },
   "devDependencies": {
     "@wdio/jasmine-framework": "^7.12.5",
