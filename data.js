@@ -1,6 +1,7 @@
 module.exports = {
     channelId: '@tlv_apartments',
     groups: [
+        'https://www.facebook.com/groups/403787519759673',
         'https://www.facebook.com/groups/1611176712488861',
         'https://www.facebook.com/groups/423017647874807',
         'https://www.facebook.com/groups/101875683484689',
@@ -12,5 +13,4 @@ module.exports = {
     unmatchPath: 'unmatchData.json',
     singlePostPath: 'one_post.json',
     singlePostResultPath: 'result.json',
-    pythonScriptSinglePost: './filtering/filter_words.py "one_post.json"'
 }
