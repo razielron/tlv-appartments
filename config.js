@@ -1,6 +1,7 @@
 module.exports = {
     channelId: '@tlv_apartments',
     postsPerGroup: 15,
+    streetSimilarityThreashold: 0.8,
     groups: [
         'https://www.facebook.com/groups/403787519759673',
         'https://www.facebook.com/groups/1611176712488861',

@@ -3,8 +3,8 @@ const fs = require('fs');
 const creds = require('./creds');
 const data = require('./config');
 const filters = require('./filtering/filters.json');
-const { match, checkPost } = require('./filtering/filter');
-const { getTlvStreets } = require('./govData');
+const { match, checkPost, smartSplit } = require('./filtering/filter');
+const { isStreet } = require('./govData');
 
 const bot = new TelegramBot(creds.telegramToken, {polling: true});
 let MatchPostsCount = 0, UnmatchPostsCount = 0;
@@ -58,6 +58,18 @@ function getRoomNum(stateArr) {
     return undefined;
 }
 
+function compareStreets(postTextArr) {
+    let match, matchStreets = [];
+
+    for(let i = 0; i < postTextArr.length; i++) {
+        if(match = isStreet(postTextArr[i])) {
+            matchStreets.push(match);
+        }
+    }
+
+    return matchStreets;
+}
+
 function getStreet(stateArr) {
     let streetIndicators = ["רחוב"];
     let result = [];
@@ -83,10 +95,11 @@ function saveMatch(allData, postData) {
     fs.writeFileSync(data.allDataPath, JSON.stringify(allData));
 }
 
-function sendMatchData(postData) { 
+function sendMatchMessage(postData) { 
     let message = `${MatchPostsCount}`;
     message += `\nמספר חדרים: ${postData.rooms || '-'}`;
     message += `\nרחובות אפשריים: ${postData.possibleStreets}`;
+    message += `\nהתאמת רחובות: ${postData.matchStreets}`;
     message += `\n${postData.postUrl}`;
 
     bot.sendMessage(data.channelId, message, {disable_web_page_preview: true});
@@ -110,11 +123,12 @@ function CheckAndSavePost(postData) {
         postData = isMatch(postData);
         postData['rooms'] = getRoomNum(postData['stateArr']);
         postData['possibleStreets'] = getStreet(postData['stateArr']);
+        postData['matchStreets'] = compareStreets(smartSplit(postData['postText']));
         printResults(postData);
 
         if(postData['isMatch']) {
             MatchPostsCount++
-            sendMatchData(postData);
+            sendMatchMessage(postData);
             saveMatch(allData, postData);
         } else {
             UnmatchPostsCount++;
