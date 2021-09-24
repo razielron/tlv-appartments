@@ -1,13 +1,12 @@
+const TelegramBot = require('node-telegram-bot-api');
 const fs = require('fs');
 const creds = require('./creds');
-const data = require('./data');
+const data = require('./config');
 const filters = require('./filtering/filters.json');
 const { match, checkPost } = require('./filtering/filter');
 const { getTlvStreets } = require('./govData');
-const TelegramBot = require('node-telegram-bot-api');
 
 const bot = new TelegramBot(creds.telegramToken, {polling: true});
-const tlvStreets = getTlvStreets();
 let MatchPostsCount = 0, UnmatchPostsCount = 0;
 
 const syncWait = ms => {
