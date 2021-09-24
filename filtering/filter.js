@@ -15,8 +15,9 @@ function smartSplit(postText) {
     return postArr;
 }
 
-function match(word, filter) {
-    return word.includes(filter);
+function match(word, filter) {    
+    const regex = new RegExp(filter);
+    return regex.test(word);
 }
 
 function getNextState(current_q, word) {
