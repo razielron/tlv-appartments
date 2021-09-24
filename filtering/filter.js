@@ -1,5 +1,9 @@
 let filters = require('./filters.json');
 
+function containsHebrew(str) {
+    return (/[\u0590-\u05FF]/).test(str);
+}
+
 function smartSplit(postText) {
     let postArr;
     let delimiters = /\s|[a-zA-Z]/;
@@ -63,5 +67,6 @@ module.exports = {
     checkWords,
     getNextState,
     smartSplit,
-    match
+    match,
+    containsHebrew
 }
