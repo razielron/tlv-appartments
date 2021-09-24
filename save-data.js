@@ -5,6 +5,7 @@ const filters = require('./filtering/filters.json');
 const { checkPost } = require('./filtering/filter');
 const TelegramBot = require('node-telegram-bot-api');
 const { exec } = require("child_process");
+const { post } = require('request');
 
 const bot = new TelegramBot(creds.telegramToken, {polling: true});
 let MatchPostsCount = 0, UnmatchPostsCount = 0;
@@ -48,7 +49,7 @@ function isMatch(postData) {
 
 function getRoomNum(stateArr) {
     for(let i = 1; i < stateArr.length; i++) {
-        if(filters['q6']['q2'].includes(stateArr[i]['matchedWord'])) {
+        if(filters['q7']['q2'].includes(stateArr[i]['matchedWord'])) {
             return stateArr[i - 1]['matchedWord'];
         }
     }
@@ -69,7 +70,10 @@ function saveMatch(allData, postData) {
 }
 
 function sendMatchData(postData) { 
-    let message = `${MatchPostsCount}\n${postData.postUrl}`;
+    let message = `${MatchPostsCount}`;
+    message += `\n${postData.rooms || 'unknown'} Rooms`;
+    message += `\n${postData.postUrl}`;
+
     bot.sendMessage(data.channelId, message, {disable_web_page_preview: true});
 }
 
