@@ -80,7 +80,7 @@ function getStreet(stateArr) {
     let streetIndicators = ["רחוב"];
     let result = [];
 
-    for(let i = 1; i < stateArr.length; i++) {
+    for(let i = 1; i < stateArr.length - 1; i++) {
         if(streetIndicators.some(indicator => match(stateArr[i]['matchedWord'], indicator))) {
             result.push(stateArr[i + 1]['matchedWord']);
         }
