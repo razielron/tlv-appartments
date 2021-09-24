@@ -46,6 +46,7 @@ function isMatch(postData) {
         postData['isMatch'] = result[result.length - 1]['state'] !== 'q2';
     } else {
         postData['isMatch'] = false;
+        postData['stateArr'] = [{state: 'q0', matchedWord: ''}];
     }
 
     return postData;
