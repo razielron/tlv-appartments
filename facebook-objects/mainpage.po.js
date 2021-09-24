@@ -25,6 +25,12 @@ class MainPage {
     }
     get arrowDropDown() { return $('div[class="rq0escxv l9j0dhe7 du4w35lb j83agx80 pfnyh3mw i1fnvgqd bp9cbjyn owycx6da btwxx1t3 jeutjz8y"]'); }
     get sortOptions() { return $$('div[role="menuitemradio"]'); }
+    async seeMoreBtn(elem) { 
+        return await elem.$$('div[role="button"]')
+        .filter(async el => {
+            return ((await el.getText()) === 'See More');
+        });
+    }
 
     async sortByRecent() {
         await this.arrowDropDown.waitForExist({timeout: 60000});
@@ -106,9 +112,19 @@ class MainPage {
         //console.log({postData});
     }
 
+    async pressSeeMoreIfExists(currentPost) {
+        let seeMore = await this.seeMoreBtn(currentPost);
+
+        if(seeMore[0] && await seeMore[0].isExisting()) {
+            await seeMore[0].scrollIntoView(false);
+            await seeMore[0].click();
+        }
+    }
+
     async getPostDataFromGroup(currentPost, postNum) {
         let postUrlElem, postUrl, postText, postData;
 
+        await this.pressSeeMoreIfExists(currentPost);
         postUrlElem = await this.getAllLinks(currentPost);
 
         if(postUrlElem.length > 0) {
