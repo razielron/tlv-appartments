@@ -1,6 +1,6 @@
 const Login = require('../facebook-objects/login.po');
 const MainPage = require('../facebook-objects/mainpage.po');
-const data = require('../data');
+const data = require('../config');
 
 describe('Login', () => {
     it('Login', async () => {
@@ -15,12 +15,12 @@ for(let i = 0; i < data.groups.length; i++) {
             await browser.pause(5000);
         });
 
-        it('Sort Posts By Most Recent', async () => {
+        xit('Sort Posts By Most Recent', async () => {
             await MainPage.sortByRecent();
         });
 
         it('Run', async () => {
-            await MainPage.goOverArticles();
+            await MainPage.goOverArticles(data.postsPerGroup);
         });
     });
 }

@@ -1,5 +1,6 @@
 module.exports = {
     channelId: '@tlv_apartments',
+    postsPerGroup: 15,
     groups: [
         'https://www.facebook.com/groups/403787519759673',
         'https://www.facebook.com/groups/1611176712488861',
@@ -13,4 +14,5 @@ module.exports = {
     unmatchPath: 'unmatchData.json',
     singlePostPath: 'one_post.json',
     singlePostResultPath: 'result.json',
+    streetsDataPath: 'streetsData.json'
 }
