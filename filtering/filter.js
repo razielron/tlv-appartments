@@ -11,10 +11,14 @@ function smartSplit(postText) {
     return postArr;
 }
 
+function match(word, filter) {
+    return word.includes(filter);
+}
+
 function getNextState(current_q, word) {
     for(let state in current_q) {
         for(let filterIndex = 0; filterIndex < current_q[state].length; filterIndex++) {
-            if(word.includes(current_q[state][filterIndex]))
+            if(match(word, current_q[state][filterIndex]))
                 return { state, word };
         }
     }
@@ -58,5 +62,6 @@ module.exports = {
     checkPost,
     checkWords,
     getNextState,
-    smartSplit
+    smartSplit,
+    match
 }
