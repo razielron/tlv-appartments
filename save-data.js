@@ -3,7 +3,7 @@ const fs = require('fs');
 const creds = require('./creds');
 const data = require('./config');
 const filters = require('./filtering/filters.json');
-const { match, checkPost, smartSplit } = require('./filtering/filter');
+const { match, checkPost, smartSplit, containsHebrew } = require('./filtering/filter');
 const { isStreet } = require('./govData');
 
 const bot = new TelegramBot(creds.telegramToken, {polling: true});
@@ -38,10 +38,15 @@ function isAlreadySaved(allData, postData) {
 }
 
 function isMatch(postData) {
-    let result = checkPost(postData);
-
-    postData['stateArr'] = result;
-    postData['isMatch'] = result[result.length - 1]['state'] !== 'q2';
+    let result;
+    
+    if(containsHebrew(postData['postText'])) {
+        result = checkPost(postData);
+        postData['stateArr'] = result;
+        postData['isMatch'] = result[result.length - 1]['state'] !== 'q2';
+    } else {
+        postData['isMatch'] = false;
+    }
 
     return postData;
 }
