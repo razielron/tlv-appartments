@@ -117,6 +117,18 @@ function getPhoneNumber(stateArr) {
     return result;
 }
 
+function getPrice(stateArr) {
+    let result = [];
+
+    for(let i = 1; i < stateArr.length; i++) {
+        if(stateArr[i]['state'] === 'q12') {
+            result.push(stateArr[i]['matchedWord']);
+        }
+    }
+
+    return result;
+}
+
 module.exports = {
     checkPost,
     checkWords,
@@ -127,5 +139,6 @@ module.exports = {
     getRoomNum,
     getSimilarStreets,
     getStreet,
-    getPhoneNumber
+    getPhoneNumber,
+    getPrice
 }
