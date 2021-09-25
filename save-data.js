@@ -3,8 +3,8 @@ const fs = require('fs');
 const creds = require('./creds');
 const data = require('./config');
 const filters = require('./filtering/filters.json');
-const { match, checkPost, smartSplit, containsHebrew } = require('./filtering/filter');
-const { isStreet } = require('./govData');
+const { checkPost, smartSplit, containsHebrew,
+    getRoomNum, getSimilarStreets, getStreet, getPhoneNumber } = require('./filtering/filter');
 
 const bot = new TelegramBot(creds.telegramToken, {polling: true});
 let MatchPostsCount = 0, UnmatchPostsCount = 0;
@@ -14,7 +14,7 @@ const syncWait = ms => {
     while (Date.now() < end) continue
 }
 
-function printResults(postData) {
+function printResult(postData) {
     let postDataNoText = {};
 
     for(let key in postData)
@@ -52,43 +52,6 @@ function isMatch(postData) {
     return postData;
 }
 
-function getRoomNum(stateArr) {
-    let roomIndicators = ["חדרים"];
-
-    for(let i = 1; i < stateArr.length; i++) {
-        if(roomIndicators.some(indicator => match(stateArr[i]['matchedWord'], indicator))) {
-            return stateArr[i - 1]['matchedWord'];
-        }
-    }
-
-    return undefined;
-}
-
-function compareStreets(postTextArr) {
-    let match, matchStreets = [];
-
-    for(let i = 0; i < postTextArr.length; i++) {
-        if(match = isStreet(postTextArr[i])) {
-            matchStreets.push(match);
-        }
-    }
-
-    return matchStreets;
-}
-
-function getStreet(stateArr) {
-    let streetIndicators = ["רחוב"];
-    let result = [];
-
-    for(let i = 1; i < stateArr.length - 1; i++) {
-        if(streetIndicators.some(indicator => match(stateArr[i]['matchedWord'], indicator))) {
-            result.push(stateArr[i + 1]['matchedWord']);
-        }
-    }
-
-    return result;
-}
-
 function saveUnmatch(unmatchData, postData) {
     console.log(`Saving Unmacthed post: ${postData.postUrl}`);
     unmatchData.unmatchPosts.push(postData);
@@ -103,12 +66,23 @@ function saveMatch(allData, postData) {
 
 function sendMatchMessage(postData) { 
     let message = `${MatchPostsCount}`;
-    message += `\nמספר חדרים: ${postData.rooms || '-'}`;
+    message += `\nמספר חדרים: ${postData.rooms}`;
     message += `\nרחובות אפשריים: ${postData.possibleStreets}`;
     message += `\nהתאמת רחובות: ${postData.matchStreets}`;
+    message += `\nטלפון: ${postData.phone}`;
     message += `\n${postData.postUrl}`;
 
     bot.sendMessage(data.channelId, message, {disable_web_page_preview: true});
+}
+
+function fillPostData(postData) {
+    postData = isMatch(postData);
+    postData['rooms'] = getRoomNum(postData['stateArr']);
+    postData['possibleStreets'] = getStreet(postData['stateArr']);
+    postData['matchStreets'] = getSimilarStreets(smartSplit(postData['postText']));
+    postData['phone'] = getPhoneNumber(postData['stateArr']);
+
+    return postData;
 }
 
 function CheckAndSavePost(postData) {
@@ -126,11 +100,8 @@ function CheckAndSavePost(postData) {
     }
 
     if(!isAlreadySaved(allData['postsData'], postData) && !isAlreadySaved(unmatchData['unmatchPosts'], postData)) {
-        postData = isMatch(postData);
-        postData['rooms'] = getRoomNum(postData['stateArr']);
-        postData['possibleStreets'] = getStreet(postData['stateArr']);
-        postData['matchStreets'] = compareStreets(smartSplit(postData['postText']));
-        printResults(postData);
+        postData = fillPostData(postData);
+        printResult(postData);
 
         if(postData['isMatch']) {
             MatchPostsCount++
@@ -142,8 +113,10 @@ function CheckAndSavePost(postData) {
         }
     }
 
+    console.log(`------------------------ RUN RESULTS ------------------------`);
     console.log(`Match Posts:   ${MatchPostsCount}`);
     console.log(`Unmatch Posts: ${UnmatchPostsCount}`);
+    console.log(`------------------------ RUN RESULTS ------------------------`);
 }
 
 module.exports = {
@@ -155,9 +128,13 @@ module.exports = {
 let postData = {"postNum":0,"postUrl":"https://www.facebook.com/groups/1611176712488861/posts/3003441243262394/","postText":"Hostel BU93 shared a post.\n7\nt\nc\nS\ne\nh\no\nn\ns\n  ·\nSleeping in a sukkah all week? We have a better plan. Come stay with us only minutes from Gordon Beach to make your holiday that much better. Hostel beds priced at only 69 NIS per night. For a special Sukkot deal: book 10 nights and get 5% off your total booking! Relax on the beach all day and bar hop all night. What's a better way to celebrate??\nCall or text +9720584129266 (English) +9720542227141 (Hebrew) or visit our site to reserve\nישנים כל השבוע בסוכה? יש לנו תוכנית טובה יותר. בוא להישאר איתנו רק דקות מחוף גורדון כדי להפוך את החופשה שלך להרבה יותר טובה. מיטות הוסטל במחיר של 69 ₪ בלבד ללילה. לעסקת סוכות מיוחדת: הזמינו 10 לילות וקבלו 5% הנחה על כל ההזמנה! תירגע על החוף כל היום ובר הופ כל הלילה. איזו דרך טובה יותר לחגוג ??\nהתקשר או שלח הודעה +9720584129266 (אנגלית) +9720542227141 (עברית) או בקר באתרנו להזמין מקום\nLike\nComment\n0 Comments\nWrite a comment…"}
 let postData2 = {'postNum': 2, 'postUrl': 'https://www.facebook.com/groups/1611176712488861/posts/3003305009942684/', 'postText': "Orly Saranga\nl\n1\nt\nS\ni\n1\np\nm\nn\ns\nh\no\nr\ne\nd\n  ·\nהתפנה חדר בדירת 3 שותפים הכניסה מיידית\nהדירה נמצאת ברחוב טרומפלדור, דקה מהים!.\nקומה 2 עם מעלית, הדירה  מאובזרת חלקית.\nשכירות 2200₪ לא כולל \nגודל\nחדר קטן \n2.90 אורך\n2.40 רוחב\nבדירה יש 2 חתולים\nואסור להכניס בצל לדירה\nאם את/ה בסביבות 30+ , אוהבים חתולים ומוכנים לוותר על בצל (השותפה אלרגית אז אסור להכניס לדירה בצל)..\nמוזמנים לשלוח *הודעה בלבד* למירב בטלפון 053-270-2377\nהיא מראה את הגירה כל יום בין 19:30 ל-21:30\nThis content isn't available right now\nWhen this happens, it's usually because the owner only shared it with a small group of people, changed who can see it or it's been deleted.\nLike\nComment\n0 Comments\nWrite a comment…"}
 let postData3 = {'postNum': 7, 'postUrl': 'https://www.facebook.com/groups/101875683484689/posts/1579369019068677/', 'postText': 'Joni Yehuda Eilati\n2\no\nh\nn\nh\ns\no\nd\n  ·\nלמה אין תנאי כזה שמי שלא מפרסם מחיר ומיקום מורידים לו את הפוסט? לא ברור.\n157\n157\n27 Comments\nLike\nComment\n27 Comments\nView 8 more comments\nAll Comments\nיוסי אזולאי\n2 חדרים 4700 כולל ארנונה בפלורנטין\nארבבנאל 66\nכניסה ב1.10\nLike\n · Reply · 55m\nItamar Gortzak\nלמה 10 שנים אחרי המחאה החברתית הכי גדולה שהייתה במדינה עדיין לא השתנה מספיק בשביל שנצא מהמצוקה ואנחנו עדיין שותקים על זה..?\n2\nLike\n · Reply · 18m\nActive\n\nWrite a comment…'}
+let postData4 = {
+    "postNum": 6,
+    "postUrl": "https://www.facebook.com/groups/35819517694/posts/10158657594547691/",
+    "postText": "אדיר כהן shared a post.\n1\nt\nl\np\n2h\nn\nu\nr\ne\no\n  ·\nדירה להשכרה ברחוב אבא הלל סילבר 41\nחדר ומרפסת סגורה\nקומת כניסה ללא מדרגות בכלל\nכניסה ראשונה מתוך 4\nמיקום מרכזי\nסופר , קופת חולים וכל מה שרק צריך במרחק הליכה מהבית\nללא עמלת תיווך\nעבר שיפוץ חלקי \nמזגן חדש \nתריסים חשמליים פלוס רשתות\nיש ריהוט חלקי בדירה\nחנייה בשפע\nותחנת אוטובוס במרחק דקה הליכה\nקרוב לטכניון\nמחיר כזה לא שמעתם\n!\nמספר טלפון - 0546490306\n+3\nאדיר כהן\n1\nt\nl\np\n2h\nn\nu\nr\ne\no\n  ·\nדירה להשכרה בחיפה ברחוב אבא הלל סילבר 41\nחדר ומרפסת סגורה\nקומת כניסה ללא מדרגות בכלל\nכניסה ראשונה מתוך 4\nמיקום מרכזי\n… See More\n1\n1\n1 Comment\nLike\nComment\n1 Comment\nAll Comments\nVan Dam\nמחיר?\nLike\n · Reply · 14m\nActive\n\nWrite a comment…"}
 // isMatch(postData2);
 // isMatchPy(postData2);
-// CheckAndSavePost(postData3);
+// CheckAndSavePost(postData4);
 let stateArr = [
     {
       "state": "q0",
