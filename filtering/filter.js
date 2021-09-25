@@ -1,8 +1,13 @@
 let filters = require('./filters.json');
+const { isStreet } = require('../govData');
 
 function containsHebrew(str) {
     return (/[\u0590-\u05FF]/).test(str);
 }
+
+function containsNumber(myString) {
+    return /\d/.test(myString);
+  }
 
 function smartSplit(postText) {
     let postArr;
@@ -63,11 +68,64 @@ function checkPost(postData) {
     return stateArr;
 }
 
+function getRoomNum(stateArr) {
+    let roomIndicators = ["חדרים"];
+
+    for(let i = 1; i < stateArr.length; i++) {
+        if(roomIndicators.some(indicator => match(stateArr[i]['matchedWord'], indicator)) && containsNumber(stateArr[i]['matchedWord'])) {
+            return stateArr[i - 1]['matchedWord'];
+        }
+    }
+
+    return '-';
+}
+
+function getSimilarStreets(postTextArr) {
+    let match, matchStreets = [];
+
+    for(let i = 0; i < postTextArr.length; i++) {
+        if(match = isStreet(postTextArr[i])) {
+            matchStreets.push(match);
+        }
+    }
+
+    return matchStreets;
+}
+
+function getStreet(stateArr) {
+    let streetIndicators = ["רחוב"];
+    let result = [];
+
+    for(let i = 1; i < stateArr.length - 1; i++) {
+        if(streetIndicators.some(indicator => match(stateArr[i]['matchedWord'], indicator))) {
+            result.push(stateArr[i + 1]['matchedWord']);
+        }
+    }
+
+    return result;
+}
+
+function getPhoneNumber(stateArr) {
+    let result = [];
+
+    for(let i = 1; i < stateArr.length; i++) {
+        if(stateArr[i]['state'] === 'q11' && stateArr[i]['matchedWord'].length >= 10) {
+            result.push(stateArr[i]['matchedWord']);
+        }
+    }
+
+    return result;
+}
+
 module.exports = {
     checkPost,
     checkWords,
     getNextState,
     smartSplit,
     match,
-    containsHebrew
+    containsHebrew,
+    getRoomNum,
+    getSimilarStreets,
+    getStreet,
+    getPhoneNumber
 }
