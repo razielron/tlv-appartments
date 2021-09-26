@@ -69,10 +69,11 @@ function checkPost(postData) {
 }
 
 function getRoomNum(stateArr) {
-    let roomIndicators = ["חדרים"];
+    let roomIndicators = filters['q7']['q2'];
 
     for(let i = 1; i < stateArr.length; i++) {
-        if(roomIndicators.some(indicator => match(stateArr[i]['matchedWord'], indicator)) && containsNumber(stateArr[i]['matchedWord'])) {
+        if(roomIndicators.some(indicator => match(stateArr[i]['matchedWord'], indicator))
+            && containsNumber(stateArr[i - 1]['matchedWord'])) {
             return stateArr[i - 1]['matchedWord'];
         }
     }
@@ -93,7 +94,7 @@ function getSimilarStreets(postTextArr) {
 }
 
 function getStreet(stateArr) {
-    let streetIndicators = ["רחוב"];
+    let streetIndicators = filters['q0']['q10'];
     let result = [];
 
     for(let i = 1; i < stateArr.length - 1; i++) {
@@ -106,10 +107,11 @@ function getStreet(stateArr) {
 }
 
 function getPhoneNumber(stateArr) {
+    let phoneIndicator = 'q11';
     let result = [];
 
     for(let i = 1; i < stateArr.length; i++) {
-        if(stateArr[i]['state'] === 'q11' && stateArr[i]['matchedWord'].length >= 10) {
+        if(stateArr[i]['state'] === phoneIndicator && stateArr[i]['matchedWord'].length >= 10) {
             result.push(stateArr[i]['matchedWord']);
         }
     }
@@ -118,10 +120,11 @@ function getPhoneNumber(stateArr) {
 }
 
 function getPrice(stateArr) {
+    let priceIndicator = 'q12';
     let result = [];
 
     for(let i = 1; i < stateArr.length; i++) {
-        if(stateArr[i]['state'] === 'q12') {
+        if(stateArr[i]['state'] === priceIndicator) {
             result.push(stateArr[i]['matchedWord']);
         }
     }

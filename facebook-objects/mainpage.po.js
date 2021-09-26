@@ -122,7 +122,7 @@ class MainPage {
     }
 
     async getPostDataFromGroup(currentPost, postNum) {
-        let postUrlElem, postUrl, postText, postData;
+        let postUrlElem, postUrl, postText, postData, sliceFrom, SliceTo;
 
         await this.pressSeeMoreIfExists(currentPost);
         postUrlElem = await this.getAllLinks(currentPost);
@@ -132,9 +132,12 @@ class MainPage {
             await postUrlElem.scrollIntoView(false);
             await postUrlElem.moveTo(0,0);
             postUrl = await postUrlElem.getAttribute('href');
-            
-            postUrl = postUrl.split('?')[0];
             postText = await currentPost.getText();
+
+            postUrl = postUrl.split('?')[0];
+            sliceFrom = Math.max(postText.indexOf('·\n'), 0);
+            SliceTo = postText.indexOf('Like\nComment');
+            postText = postText.slice(sliceFrom, SliceTo);
             postData = {postNum, postUrl, postText};
             console.log({postUrl});
 

@@ -1,7 +1,7 @@
 const TelegramBot = require('node-telegram-bot-api');
 const fs = require('fs');
 const creds = require('./creds');
-const data = require('./config');
+const config = require('./config');
 const filters = require('./filtering/filters.json');
 const { checkPost, smartSplit, containsHebrew,
     getRoomNum, getSimilarStreets, getStreet,
@@ -10,9 +10,26 @@ const { checkPost, smartSplit, containsHebrew,
 const bot = new TelegramBot(creds.telegramToken, {polling: true});
 let MatchPostsCount = 0, UnmatchPostsCount = 0;
 
-const syncWait = ms => {
-    const end = Date.now() + ms
-    while (Date.now() < end) continue
+function deleteBeforeRunFiles() {
+    deleteFile(config.singleRunMatchPath);
+    deleteFile(config.singleRunUnmatchPath);
+}
+
+function deleteFile(path) {
+    if(fs.existsSync(path)) {
+        fs.unlinkSync(path)
+    }
+}
+
+function getDataByFile(path) {
+    let allData = { data: [] };
+
+    if(fs.existsSync(path)) {
+        allData = fs.readFileSync(path, 'utf8');
+        allData = JSON.parse(allData);
+    }
+
+    return allData;
 }
 
 function printResult(postData) {
@@ -27,10 +44,21 @@ function printResult(postData) {
     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RESULT @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 }
 
-function isAlreadySaved(allData, postData) {
-    for(let i = 0; i < allData.length; i++) {
-        if(allData[i].postUrl === postData.postUrl) {
-            console.log(`Already Saved, isMatch: ${postData['isMatch']}`);
+function isSameSavedText(matchData, postData) {
+    for(let i = 0; i < matchData.length; i++) {
+        if(matchData[i].posText === postData.postText) {
+            console.log(`Already Saved, isMatch: ${matchData[i]['isMatch']}`);
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function isAlreadySaved(postsArr, postData) {
+    for(let i = 0; i < postsArr.length; i++) {
+        if(postsArr[i].postUrl === postData.postUrl) {
+            console.log(`Already Saved, isMatch: ${postsArr[i]['isMatch']}`);
             return true;
         }
     }
@@ -53,16 +81,10 @@ function isMatch(postData) {
     return postData;
 }
 
-function saveUnmatch(unmatchData, postData) {
-    console.log(`Saving Unmacthed post: ${postData.postUrl}`);
-    unmatchData.unmatchPosts.push(postData);
-    fs.writeFileSync(data.unmatchPath, JSON.stringify(unmatchData));
-}
-
-function saveMatch(allData, postData) {
-    console.log(`Saving Macthed post: ${postData.postUrl}`);
-    allData.postsData.push(postData);
-    fs.writeFileSync(data.allDataPath, JSON.stringify(allData));
+function saveDataToFile(filePath, allData, postData) {
+    console.log(`Saving post ${postData.postUrl} to ${filePath}`);
+    allData.data.push(postData);
+    fs.writeFileSync(filePath, JSON.stringify(allData));
 }
 
 function sendMatchMessage(postData) { 
@@ -74,7 +96,7 @@ function sendMatchMessage(postData) {
     message += `\nטלפון: ${postData.phone}`;
     message += `\n${postData.postUrl}`;
 
-    bot.sendMessage(data.channelId, message, {disable_web_page_preview: true});
+    bot.sendMessage(config.channelId, message, {disable_web_page_preview: true});
 }
 
 function fillPostData(postData) {
@@ -89,30 +111,24 @@ function fillPostData(postData) {
 }
 
 function CheckAndSavePost(postData) {
-    let allData = { postsData: [] };
-    let unmatchData = { unmatchPosts: [] };
+    let matchData = getDataByFile(config.matchPath);
+    let unmatchData = getDataByFile(config.unmatchPath);
 
-    if(fs.existsSync(data.allDataPath)) {
-        allData = fs.readFileSync(data.allDataPath, 'utf8');
-        allData = JSON.parse(allData);
-    }
+    deleteBeforeRunFiles();
 
-    if(fs.existsSync(data.unmatchPath)) {
-        unmatchData = fs.readFileSync(data.unmatchPath, 'utf8');
-        unmatchData = JSON.parse(unmatchData);
-    }
-
-    if(!isAlreadySaved(allData['postsData'], postData) && !isAlreadySaved(unmatchData['unmatchPosts'], postData)) {
+    if(!isAlreadySaved(matchData['data'], postData) && !isAlreadySaved(unmatchData['data'], postData) && !isSameSavedText(matchData['data'], postData)) {
         postData = fillPostData(postData);
         printResult(postData);
 
         if(postData['isMatch']) {
             MatchPostsCount++
             sendMatchMessage(postData);
-            saveMatch(allData, postData);
+            saveDataToFile(config.matchPath, matchData, postData);
+            saveDataToFile(config.singleRunMatchPath, matchData, postData);
         } else {
             UnmatchPostsCount++;
-            saveUnmatch(unmatchData, postData);
+            saveDataToFile(config.unmatchPath, unmatchData, postData);
+            saveDataToFile(config.singleRunUnmatchPath, unmatchData, postData);
         }
     }
 
