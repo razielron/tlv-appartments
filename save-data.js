@@ -5,7 +5,7 @@ const config = require('./config');
 const filters = require('./filtering/filters.json');
 const { checkPost, smartSplit, containsHebrew,
     getRoomNum, getSimilarStreets, getStreet,
-    getPhoneNumber, getPrice } = require('./filtering/filter');
+    getPhoneNumber, getPrice, filterPrice } = require('./filtering/filter');
 
 const bot = new TelegramBot(creds.telegramToken, {polling: true});
 let MatchPostsCount = 0, UnmatchPostsCount = 0;
@@ -46,7 +46,7 @@ function printResult(postData) {
 
 function isSameSavedText(matchData, postData) {
     for(let i = 0; i < matchData.length; i++) {
-        if(matchData[i].posText === postData.postText) {
+        if(matchData[i].postText === postData.postText) {
             console.log(`Already Saved, isMatch: ${matchData[i]['isMatch']}`);
             return true;
         }
@@ -66,13 +66,24 @@ function isAlreadySaved(postsArr, postData) {
     return false;
 }
 
-function isMatch(postData) {
-    let result;
-    
+function fillStateArr(postData) {
     if(containsHebrew(postData['postText'])) {
-        result = checkPost(postData);
-        postData['stateArr'] = result;
-        postData['isMatch'] = result[result.length - 1]['state'] !== 'q2';
+        postData['stateArr'] = checkPost(postData);
+    } else {
+        postData['stateArr'] = [{state: 'q0', matchedWord: ''}];
+    }
+
+    return postData;
+}
+
+function isMatch(postData) {
+    let stateArr;
+    
+    if(postData['stateArr']) {
+        stateArr = postData['stateArr'];
+        postData['isMatch'] = 
+            stateArr[stateArr.length - 1]['state'] !== 'q2'
+            && filterPrice(postData['price']);
     } else {
         postData['isMatch'] = false;
         postData['stateArr'] = [{state: 'q0', matchedWord: ''}];
@@ -100,12 +111,13 @@ function sendMatchMessage(postData) {
 }
 
 function fillPostData(postData) {
-    postData = isMatch(postData);
+    postData = fillStateArr(postData);
     postData['rooms'] = getRoomNum(postData['stateArr']);
     postData['possibleStreets'] = getStreet(postData['stateArr']);
     postData['matchStreets'] = getSimilarStreets(smartSplit(postData['postText']));
     postData['phone'] = getPhoneNumber(postData['stateArr']);
     postData['price'] = getPrice(postData['stateArr']);
+    postData = isMatch(postData);
 
     return postData;
 }
@@ -113,6 +125,8 @@ function fillPostData(postData) {
 function CheckAndSavePost(postData) {
     let matchData = getDataByFile(config.matchPath);
     let unmatchData = getDataByFile(config.unmatchPath);
+    let singleRunMatch = getDataByFile(config.singleRunMatchPath);
+    let singleRunUnmatch = getDataByFile(config.singleRunUnmatchPath);
 
     if(!isAlreadySaved(matchData['data'], postData) && !isAlreadySaved(unmatchData['data'], postData) && !isSameSavedText(matchData['data'], postData)) {
         postData = fillPostData(postData);
@@ -122,11 +136,11 @@ function CheckAndSavePost(postData) {
             MatchPostsCount++
             sendMatchMessage(postData);
             saveDataToFile(config.matchPath, matchData, postData);
-            saveDataToFile(config.singleRunMatchPath, matchData, postData);
+            saveDataToFile(config.singleRunMatchPath, singleRunMatch, postData);
         } else {
             UnmatchPostsCount++;
             saveDataToFile(config.unmatchPath, unmatchData, postData);
-            saveDataToFile(config.singleRunUnmatchPath, unmatchData, postData);
+            saveDataToFile(config.singleRunUnmatchPath, singleRunUnmatch, postData);
         }
     }
 
