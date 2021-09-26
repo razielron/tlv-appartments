@@ -31,6 +31,7 @@ class MainPage {
             return ((await el.getText()) === 'See More');
         });
     }
+    async getImages(elem) { return elem.$$('img[class="i09qtzwb n7fi1qx3 datstx6m pmk7jnqg j9ispegn kr520xx4 k4urcfbm"]'); }
 
     async sortByRecent() {
         await this.arrowDropDown.waitForExist({timeout: 60000});
@@ -122,10 +123,11 @@ class MainPage {
     }
 
     async getPostDataFromGroup(currentPost, postNum) {
-        let postUrlElem, postUrl, postText, postData, sliceFrom, SliceTo;
+        let postUrlElem, postUrl, postText, postData, postIamges, isContainsPic, sliceFrom, SliceTo;
 
         await this.pressSeeMoreIfExists(currentPost);
         postUrlElem = await this.getAllLinks(currentPost);
+        postIamges = await this.getImages(currentPost);
 
         if(postUrlElem.length > 0) {
             postUrlElem = postUrlElem[0];
@@ -133,12 +135,13 @@ class MainPage {
             await postUrlElem.moveTo(0,0);
             postUrl = await postUrlElem.getAttribute('href');
             postText = await currentPost.getText();
+            isContainsPic = !!postIamges.length;
 
             postUrl = postUrl.split('?')[0];
             sliceFrom = Math.max(postText.indexOf('·\n'), 0);
             SliceTo = postText.indexOf('Like\nComment');
             postText = postText.slice(sliceFrom, SliceTo);
-            postData = {postNum, postUrl, postText};
+            postData = {postNum, postUrl, postText, isContainsPic};
             console.log({postUrl});
 
             if(postUrl !== '#')

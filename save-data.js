@@ -67,10 +67,10 @@ function isAlreadySaved(postsArr, postData) {
 }
 
 function fillStateArr(postData) {
-    if(containsHebrew(postData['postText'])) {
+    if(postData['isContainsPic'] && containsHebrew(postData['postText'])) {
         postData['stateArr'] = checkPost(postData);
     } else {
-        postData['stateArr'] = [{state: 'q0', matchedWord: ''}];
+        postData['stateArr'] = [{state: 'q2', matchedWord: ''}];
     }
 
     return postData;
@@ -162,9 +162,14 @@ let postData2 = {'postNum': 2, 'postUrl': 'https://www.facebook.com/groups/16111
 let postData3 = {'postNum': 7, 'postUrl': 'https://www.facebook.com/groups/101875683484689/posts/1579369019068677/', 'postText': 'Joni Yehuda Eilati\n2\no\nh\nn\nh\ns\no\nd\n  ·\nלמה אין תנאי כזה שמי שלא מפרסם מחיר ומיקום מורידים לו את הפוסט? לא ברור.\n157\n157\n27 Comments\nLike\nComment\n27 Comments\nView 8 more comments\nAll Comments\nיוסי אזולאי\n2 חדרים 4700 כולל ארנונה בפלורנטין\nארבבנאל 66\nכניסה ב1.10\nLike\n · Reply · 55m\nItamar Gortzak\nלמה 10 שנים אחרי המחאה החברתית הכי גדולה שהייתה במדינה עדיין לא השתנה מספיק בשביל שנצא מהמצוקה ואנחנו עדיין שותקים על זה..?\n2\nLike\n · Reply · 18m\nActive\n\nWrite a comment…'}
 let postData4 = {"postNum": 6,"postUrl": "https://www.facebook.com/groups/35819517694/posts/10158657594547691/","postText": "אדיר כהן shared a post.\n1\nt\nl\np\n2h\nn\nu\nr\ne\no\n  ·\nדירה להשכרה ברחוב אבא הלל סילבר 41\nחדר ומרפסת סגורה\nקומת כניסה ללא מדרגות בכלל\nכניסה ראשונה מתוך 4\nמיקום מרכזי\nסופר , קופת חולים וכל מה שרק צריך במרחק הליכה מהבית\nללא עמלת תיווך\nעבר שיפוץ חלקי \nמזגן חדש \nתריסים חשמליים פלוס רשתות\nיש ריהוט חלקי בדירה\nחנייה בשפע\nותחנת אוטובוס במרחק דקה הליכה\nקרוב לטכניון\nמחיר כזה לא שמעתם\n!\nמספר טלפון - 0546490306\n+3\nאדיר כהן\n1\nt\nl\np\n2h\nn\nu\nr\ne\no\n  ·\nדירה להשכרה בחיפה ברחוב אבא הלל סילבר 41\nחדר ומרפסת סגורה\nקומת כניסה ללא מדרגות בכלל\nכניסה ראשונה מתוך 4\nמיקום מרכזי\n… See More\n1\n1\n1 Comment\nLike\nComment\n1 Comment\nAll Comments\nVan Dam\nמחיר?\nLike\n · Reply · 14m\nActive\n\nWrite a comment…"}
 let postData5 = {"postNum": 3,"postUrl": "https://www.facebook.com/groups/35819517694/posts/10158656894707698/","postText": "Meir Golan\nYe\nl\ns\nS\nt\nS\nte\nl\nr\nd\nr\nh\nda\nr\nn\ns\na\ny at\nf\nm\n 9\na\n:19\ne\nh\na\n A\ns\nM\n  ·\nלהשכרה:\nרחוב סר ג'ון מונש 9\nדירה, יד אליהו, תל אביב יפו\n3 חדרים, קומה 2, 64 מ\"ר\nלא לשותפים. ללא תווך. שני חדרי שינה גדולים. רחוב שקט עם נוף פתוח למרחקים. בסביבה גני ילדים ובתי ספר יסודיים. מרחק הליכה לקווי תחבורה ציבוריים. חניה משותפת חופשית בבניין. שני כיווני אויר. חדר השירותים מופרד מחדר האמבטיה. דוד שמש. מכוון שהנכס עדיין מושכר, הכניסה תהיה ב-1/10/2021. ניתן לרכוש ריהוט מהדיירים היוצאים\n* תאריך כניסה 01/10/2021\n* ועד בית (לחודש) 50 ₪\n* מרפסות 2\n* קומות בבנין 4\n* מס תשלומים 12\n* ארנונה לחודשיים 400 ₪\n* חניות 1\n* מזגן בכל חדר, לטווח ארוך\n* 5000 שח\n* יוסי - 054-2184222\n+2\n3 Comments\nLike\nComment\n3 Comments\nAll Comments\nNiki Hill\nYisca Tolidano\nLike\n · Reply · 6h\nNoga Shafrir\nMichal Haleviy\nLike\n · Reply · 17m\n1 Reply\nActive\n\nWrite a comment…"}
+let postData6 = {
+    "postNum": 12,
+    "postUrl": "https://www.facebook.com/groups/101875683484689/posts/1580981338907446/",
+    "postText": "·\nאני מראה את הדירה עכשיו. אם היא לא תהיה רלוונטית אני אוריד את הפוסט. מוזמנים לבוא ולעשות סיבוב.\nמפנה דירת 3 חדרים, משופצת, ב7500 ש״ח. הדירה בארבע ארצות 3, דירה 6 מתאימה לשותפים או לזוג + ילד. קומה שניה ללא מעלית.\nארנונה כ400 ש״ח לחודשיים, ועד 150 ש״ח לחודש, כניסה ב1 באוקטובר.\nבדירה כיריים גז, בלי תנור, מקלחת קטנה במצב סביר, חיבור למכונת כביסה וכו׳. מזגן בכל חדר + חדש בסלון.\nצריך לחתימה: שני ערבים, צ׳קים מראש לשנה. אני לא הייתי צריך ערבות בנקאית, אבל יתכן והשוכר החדש יצטרך.\nהבעלים בגדול מסדר עניינים כשצריך, ולא מציק.\nקריטי לו קצת במה השוכרים עובדים או מה הם עושים, אז כשאתם יוצרים קשר בבקשה:\nשמות וגילאים של מי שבחוזה הדירה, משכורת (בערך) .\nאנחנו מוכרים 2 ארונות, מיטה עם מזרון, פינת אוכל ועוד טיפלה דברים.\nליצירת קשר:\nואטס אפ עדיף - 052-2953970\nאוהד\n+6\n3\n3\n43 Comments\n",
+    "isContainsPic": true}
 // isMatch(postData2);
 // isMatchPy(postData2);
-// CheckAndSavePost(postData5);
+ CheckAndSavePost(postData6);
 let stateArr = [
     {
       "state": "q0",
