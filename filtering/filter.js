@@ -1,4 +1,5 @@
 let filters = require('./filters.json');
+let config = require('../config');
 const { isStreet } = require('../govData');
 
 function containsHebrew(str) {
@@ -133,13 +134,21 @@ function getPrice(stateArr) {
 }
 
 function filterPrice(priceArr) {
-    for(let i = 1; i < priceArr.length; i++) {
-        if(priceArr[i] < config.priceRange[0] || priceArr[i] > config.priceRange[1]) {
-            return false;
+    let currentPrice;
+    
+    if(!priceArr.length)
+        return true;
+
+    for(let i = 0; i < priceArr.length; i++) {
+        currentPrice = priceArr[i].replace(/\D/g,'');
+        currentPrice = parseInt(currentPrice);
+
+        if(currentPrice >= config.priceRange[0] && currentPrice <= config.priceRange[1]) {
+            return true;
         }
     }
 
-    return true;
+    return false;
 }
 
 module.exports = {
