@@ -132,6 +132,16 @@ function getPrice(stateArr) {
     return result;
 }
 
+function filterPrice(priceArr) {
+    for(let i = 1; i < priceArr.length; i++) {
+        if(priceArr[i] < config.priceRange[0] || priceArr[i] > config.priceRange[1]) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 module.exports = {
     checkPost,
     checkWords,
@@ -139,6 +149,7 @@ module.exports = {
     smartSplit,
     match,
     containsHebrew,
+    filterPrice,
     getRoomNum,
     getSimilarStreets,
     getStreet,
