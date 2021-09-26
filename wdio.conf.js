@@ -1,3 +1,5 @@
+const { deleteBeforeRunFiles } = require ('./save-data');
+
 exports.config = {
     //
     // ====================
@@ -215,6 +217,8 @@ exports.config = {
      * @param {Array.<String>} specs List of spec file paths that are to be run
      */
     beforeSession: function (config, capabilities, specs) {
+        deleteBeforeRunFiles();
+
         /* global.allData = { postsData: [] };
         
         if(fs.existsSync('postsData.json')) {
