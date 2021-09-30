@@ -20,5 +20,6 @@ module.exports = {
     ],
     postsPerGroup: 15,
     streetSimilarityThreashold: 0.8,
+    postTextSimilarityThreashold: 0.8,
     priceRange: [6000, 9000]
 }
