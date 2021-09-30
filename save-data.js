@@ -2,7 +2,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const fs = require('fs');
 const creds = require('./creds');
 const config = require('./config');
-const filters = require('./filtering/filters.json');
+const stringSimilarity = require("string-similarity");
 const { checkPost, smartSplit, containsHebrew,
     getRoomNum, getSimilarStreets, getStreet,
     getPhoneNumber, getPrice, filterPrice } = require('./filtering/filter');
@@ -44,10 +44,19 @@ function printResult(postData) {
     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RESULT @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 }
 
+function isRentPost(postData) {
+    return (postData['isContainsPic'] && containsHebrew(postData['postText']));
+}
+
 function isSameSavedText(matchData, postData) {
+    let similarity = 0;
+
     for(let i = 0; i < matchData.length; i++) {
-        if(matchData[i].postText === postData.postText) {
-            console.log(`Already Saved, isMatch: ${matchData[i]['isMatch']}`);
+        similarity = stringSimilarity.compareTwoStrings(matchData[i].postText, postData.postText);
+
+        if(similarity >= config.postTextSimilarityThreashold) {
+            console.log(`Similarity Prexentage: ${100 * similarity}%`);
+            console.log(`Same text as other post, isMatch: ${matchData[i]['isMatch']}`);
             return true;
         }
     }
@@ -66,28 +75,13 @@ function isAlreadySaved(postsArr, postData) {
     return false;
 }
 
-function fillStateArr(postData) {
-    if(postData['isContainsPic'] && containsHebrew(postData['postText'])) {
-        postData['stateArr'] = checkPost(postData);
-    } else {
-        postData['stateArr'] = [{state: 'q2', matchedWord: ''}];
-    }
-
-    return postData;
-}
-
 function isMatch(postData) {
     let stateArr;
-    
-    if(postData['stateArr']) {
-        stateArr = postData['stateArr'];
-        postData['isMatch'] = 
-            stateArr[stateArr.length - 1]['state'] !== 'q2'
-            && filterPrice(postData['price']);
-    } else {
-        postData['isMatch'] = false;
-        postData['stateArr'] = [{state: 'q0', matchedWord: ''}];
-    }
+
+    stateArr = postData['stateArr'];
+    postData['isMatch'] = 
+        stateArr[stateArr.length - 1]['state'] !== 'q2'
+        && filterPrice(postData['price']);
 
     return postData;
 }
@@ -111,7 +105,7 @@ function sendMatchMessage(postData) {
 }
 
 function fillPostData(postData) {
-    postData = fillStateArr(postData);
+    postData['stateArr'] = checkPost(postData);
     postData['rooms'] = getRoomNum(postData['stateArr']);
     postData['possibleStreets'] = getStreet(postData['stateArr']);
     postData['matchStreets'] = getSimilarStreets(smartSplit(postData['postText']));
@@ -128,7 +122,11 @@ function CheckAndSavePost(postData) {
     let singleRunMatch = getDataByFile(config.singleRunMatchPath);
     let singleRunUnmatch = getDataByFile(config.singleRunUnmatchPath);
 
-    if(!isAlreadySaved(matchData['data'], postData) && !isAlreadySaved(unmatchData['data'], postData) && !isSameSavedText(matchData['data'], postData)) {
+    if(isRentPost(postData)
+        && !isAlreadySaved(matchData['data'], postData)
+        && !isAlreadySaved(unmatchData['data'], postData)
+        && !isSameSavedText(matchData['data'], postData)) {
+
         postData = fillPostData(postData);
         printResult(postData);
 
@@ -165,7 +163,7 @@ let postData5 = {"postNum": 3,"postUrl": "https://www.facebook.com/groups/358195
 let postData6 = {"postNum": 12,"postUrl": "https://www.facebook.com/groups/101875683484689/posts/1580981338907446/","postText": "·\nאני מראה את הדירה עכשיו. אם היא לא תהיה רלוונטית אני אוריד את הפוסט. מוזמנים לבוא ולעשות סיבוב.\nמפנה דירת 3 חדרים, משופצת, ב7500 ש״ח. הדירה בארבע ארצות 3, דירה 6 מתאימה לשותפים או לזוג + ילד. קומה שניה ללא מעלית.\nארנונה כ400 ש״ח לחודשיים, ועד 150 ש״ח לחודש, כניסה ב1 באוקטובר.\nבדירה כיריים גז, בלי תנור, מקלחת קטנה במצב סביר, חיבור למכונת כביסה וכו׳. מזגן בכל חדר + חדש בסלון.\nצריך לחתימה: שני ערבים, צ׳קים מראש לשנה. אני לא הייתי צריך ערבות בנקאית, אבל יתכן והשוכר החדש יצטרך.\nהבעלים בגדול מסדר עניינים כשצריך, ולא מציק.\nקריטי לו קצת במה השוכרים עובדים או מה הם עושים, אז כשאתם יוצרים קשר בבקשה:\nשמות וגילאים של מי שבחוזה הדירה, משכורת (בערך) .\nאנחנו מוכרים 2 ארונות, מיטה עם מזרון, פינת אוכל ועוד טיפלה דברים.\nליצירת קשר:\nואטס אפ עדיף - 052-2953970\nאוהד\n+6\n3\n3\n43 Comments\n","isContainsPic": true}
 let postData7 = {
     "postNum": 0,
-    "postUrl": "https://www.facebook.com/groups/101875683484689/posts/1582831718722408/",
+    "postUrl": "https://www.facebook.com/groups/101875683484689/posts/158283171872241/",
     "postText": "·\nללא תיווך\nברחוב שמשון ליד הסנטר\nדירת fdsgשלושה חדרים, 3 מרפסות (אחת סגורה)\nקומה שלישית ללא \n75 מר\nאמבטיה ומטבח משופצים\nשכד הוא 6300 לחצי שנה ואחכ יעלה\n+2\n7\n7\n70 Comments\n",
     "isContainsPic": true}
 // isMatch(postData2);
