@@ -16,7 +16,8 @@ module.exports = {
         'https://www.facebook.com/groups/365588344194085',
         'https://www.facebook.com/groups/141136760102682',
         'https://www.facebook.com/groups/429827780505313',
-        'https://www.facebook.com/groups/1427929940815001'
+        'https://www.facebook.com/groups/1427929940815001',
+        'https://www.facebook.com/groups/287564448778602'
     ],
     postsPerGroup: 15,
     streetSimilarityThreashold: 0.8,

@@ -55,6 +55,8 @@ function isSameSavedText(matchData, postData) {
         similarity = stringSimilarity.compareTwoStrings(matchData[i].postText, postData.postText);
 
         if(similarity >= config.postTextSimilarityThreashold) {
+            console.log(`Current Post: ${postData.postUrl}`);
+            console.log(`Similar to Post: ${matchData[i].postUrl}`);
             console.log(`Similarity Prexentage: ${100 * similarity}%`);
             console.log(`Same text as other post, isMatch: ${matchData[i]['isMatch']}`);
             return true;

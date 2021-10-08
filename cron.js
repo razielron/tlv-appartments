@@ -1,7 +1,7 @@
 const CronJob = require('cron').CronJob;
 const { spawn } = require("child_process");
 
-let job = new CronJob('0 */30 8-23/1 * * *', function() {
+let job = new CronJob('0 */30 8-00/1 * * *', function() {
     console.log("@@@@@ RUN STARTED @@@@@");
     console.log(process.platform);
 
