@@ -22,5 +22,13 @@ module.exports = {
     postsPerGroup: 15,
     streetSimilarityThreashold: 0.8,
     postTextSimilarityThreashold: 0.8,
-    priceRange: [6000, 9000]
+    priceRange: [6000, 9000],
+    roomsRange: [2.5, 3.5],
+    startState: 'q0',
+    endSate: 'qx',
+    roomState: 'q3',
+    phoneState: 'q13',
+    priceState: 'q14',
+    streetState: 'q15',
+    filterOutStates: ['q5', 'q7', 'q8', 'q11', 'q16' , 'q17']
 }
