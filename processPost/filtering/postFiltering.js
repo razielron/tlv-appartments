@@ -9,8 +9,17 @@ function isMatch(postData) {
         isInPriceRange: isInPriceRange(postData['price']),
         isInRoomsRange: isInRoomsRange(postData['rooms']),
     }
+    isMatched['isAllMatch'] = isAllMatch(isMatched);
 
     return isMatched;
+}
+
+function isAllMatch(isMatched) {
+    for (const [key, value] of Object.entries(isMatched)) {
+        if(!value) return false;
+    }
+
+    return true;
 }
 
 function isInPriceRange(priceArr) {

@@ -61,37 +61,41 @@ function sendMatchMessage(postData) {
     bot.sendMessage(config.channelId, message, {disable_web_page_preview: true});
 }
 
+function unmatchProcess(postData) {
+    let unmatchData = getDataByFile(config.unmatchPath);
+    let singleRunUnmatch = getDataByFile(config.singleRunUnmatchPath);
+
+    UnmatchPostsCount++;
+    saveDataToFile(config.unmatchPath, unmatchData, postData);
+    saveDataToFile(config.singleRunUnmatchPath, singleRunUnmatch, postData);
+}
+
+function matchProcess(postData) {
+    let matchData = getDataByFile(config.matchPath);
+    let singleRunMatch = getDataByFile(config.singleRunMatchPath);
+
+    MatchPostsCount++
+    sendMatchMessage(postData);
+    saveDataToFile(config.matchPath, matchData, postData);
+    saveDataToFile(config.singleRunMatchPath, singleRunMatch, postData);
+}
+
 function processPost(postData) {
     let matchData = getDataByFile(config.matchPath);
     let unmatchData = getDataByFile(config.unmatchPath);
     let singleRunMatch = getDataByFile(config.singleRunMatchPath);
     let singleRunUnmatch = getDataByFile(config.singleRunUnmatchPath);
 
-    
+    if(!isProcessable(postData)) 
+        return unmatchProcess(postData);
+        
+    postData = processText(postData);
+    postData['isMatch'] = isMatch(postData);
 
-
-
-
-
-
-    if(isRentPost(postData)
-        && !isAlreadySaved(matchData['data'], postData)
-        && !isAlreadySaved(unmatchData['data'], postData)
-        && !isSameSavedText(matchData['data'], postData)) {
-
-        postData = fillPostData(postData);
-        printResult(postData);
-
-        if(postData['isMatch']) {
-            MatchPostsCount++
-            sendMatchMessage(postData);
-            saveDataToFile(config.matchPath, matchData, postData);
-            saveDataToFile(config.singleRunMatchPath, singleRunMatch, postData);
-        } else {
-            UnmatchPostsCount++;
-            saveDataToFile(config.unmatchPath, unmatchData, postData);
-            saveDataToFile(config.singleRunUnmatchPath, singleRunUnmatch, postData);
-        }
+    if(postData['isMatch']['isAllMatch']) {
+        matchProcess(postData);
+    } else {
+        unmatchProcess(postData);
     }
 
     console.log(`------------------------ RUN RESULTS ------------------------`);
