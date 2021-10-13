@@ -1,4 +1,5 @@
 const { CheckAndSavePost } = require('../save-data');
+const { processPost } = require('../processPost/processPost');
 
 class MainPage {
     constructor() {
@@ -144,8 +145,10 @@ class MainPage {
             postData = {postNum, postUrl, postText, isContainsPic};
             console.log({postUrl});
 
-            if(postUrl !== '#')
-                CheckAndSavePost(postData);
+            if(postUrl !== '#') {
+                //CheckAndSavePost(postData);
+                processPost(postData);
+            }
         }
     }
 
