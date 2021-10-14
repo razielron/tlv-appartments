@@ -1,4 +1,3 @@
-const { CheckAndSavePost } = require('../save-data');
 const { processPost } = require('../processPost/processPost');
 
 class MainPage {
@@ -110,7 +109,7 @@ class MainPage {
         }
         console.log('999999999999999999999999999999')
         let postData = {postNum, postUrl, postText};
-        CheckAndSavePost(postData);
+        processPost(postData);
         //console.log({postData});
     }
 
@@ -146,7 +145,6 @@ class MainPage {
             console.log({postUrl});
 
             if(postUrl !== '#') {
-                //CheckAndSavePost(postData);
                 processPost(postData);
             }
         }

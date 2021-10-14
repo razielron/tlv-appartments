@@ -1,10 +1,10 @@
 const config = require('../../config');
 const { isStreet } = require('../../govData');
 
-function fillAllData(postData) {
+function fillAllData(postData, splitedText) {
     postData['rooms'] = getRooms(postData['stateArr']);
     postData['possibleStreets'] = getStreet(postData['stateArr']);
-    postData['matchStreets'] = getSimilarStreets(smartSplit(postData['postText']));
+    postData['matchStreets'] = getSimilarStreets(splitedText);
     postData['phone'] = getPhone(postData['stateArr']);
     postData['price'] = getPrice(postData['stateArr']);
 

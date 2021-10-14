@@ -86,8 +86,9 @@ function processPost(postData) {
     let singleRunMatch = getDataByFile(config.singleRunMatchPath);
     let singleRunUnmatch = getDataByFile(config.singleRunUnmatchPath);
 
-    if(!isProcessable(postData)) 
-        return unmatchProcess(postData);
+    if(!isProcessable(postData, matchData['data'], unmatchData['data'])) {
+        return console.log('Prefiltering: True');
+    }
         
     postData = processText(postData);
     postData['isMatch'] = isMatch(postData);
@@ -102,4 +103,9 @@ function processPost(postData) {
     console.log(`Match Posts:   ${MatchPostsCount}`);
     console.log(`Unmatch Posts: ${UnmatchPostsCount}`);
     console.log(`------------------------ RUN RESULTS ------------------------`);
+}
+
+module.exports = {
+    processPost,
+    deleteBeforeRunFiles
 }

@@ -1,11 +1,13 @@
 const config = require('../../config');
 const stringSimilarity = require("string-similarity");
 
-function isProcessable(postData) {
+function isProcessable(postData, matchPostsArr, unmatchPostsArr) {
     return postData['isContainsPic']
         && containsHebrew(postData['postText'])
-        && isAlreadySaved(postsArr, postData)
-        && isSameSavedText(matchData, postData);
+        && !isAlreadySaved(matchPostsArr, postData)
+        && !isAlreadySaved(unmatchPostsArr, postData)
+        && !isSameSavedText(matchPostsArr, postData)
+        && !isSameSavedText(unmatchPostsArr, postData);
 }
 
 function containsHebrew(str) {

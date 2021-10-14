@@ -5,13 +5,23 @@ const { fillAllData } = require('./extractData');
 let automaton = initAutomata(rawAutomaton);
 
 function initAutomata(automaton) {
-    let currentState;
+    let currentOutState;
     let filterOutStates = config.filterOutStates;
 
-    for(let i = 0; i < filterOutStates.length; i++) {
-        currentState = filterOutStates[i];
-        automaton[config.endSate] = automaton[currentState];
-        delete automaton[currentState];
+    for (const [fromState, toAllStates] of Object.entries(automaton)) {
+        for (const [toState, filterArr] of Object.entries(toAllStates)) {
+            for(let i = 0; i < filterOutStates.length; i++) {
+
+                currentOutState = filterOutStates[i];
+
+                if(toState === currentOutState) {
+                    if(!toAllStates[config.endSate]) toAllStates[config.endSate] = [];
+                    toAllStates[config.endSate] = [...new Set([...toAllStates[config.endSate],...filterArr])]
+                    delete toAllStates[currentOutState];
+                    i = filterOutStates.length;
+                }
+            }
+        }
     }
 
     return automaton;
@@ -70,10 +80,10 @@ function runAutomaton(words) {
 }
 
 function processText(postData) {
-    let postArr = smartSplit(postData['postText'])
-    postData['stateArr'] = runAutomaton(postArr);
+    let postTextArr = smartSplit(postData['postText'])
+    postData['stateArr'] = runAutomaton(postTextArr);
 
-    return fillAllData(postData);
+    return fillAllData(postData, postTextArr);
 }
 
 module.exports = {
