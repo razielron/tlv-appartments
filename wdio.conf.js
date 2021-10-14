@@ -1,4 +1,4 @@
-const { deleteBeforeRunFiles } = require ('./save-data');
+const { deleteBeforeRunFiles } = require ('./processPost/processPost');
 
 exports.config = {
     //
@@ -76,7 +76,7 @@ exports.config = {
                 //'--disable-gpu',
 
                 // Without a remote debugging port, Google Chrome exits immediately.
-                ' --remote-debugging-port=9222',
+                //'--remote-debugging-port=9222',
 
                 //
                 //'--window-size=1280,1024',
