@@ -4,8 +4,10 @@
   "description": "",
   "main": "wdio.conf.js",
   "scripts": {
-    "cron": "node cron.js",
-    "automation": "npx wdio run ./wdio.conf.js",
+    "cron:raziel": "set NODE_ENV=raziel && node cron.js",
+    "cron:shahar": "set NODE_ENV=shahar && node cron.js",
+    "automation:raziel": "set NODE_ENV=raziel && npx wdio run ./wdio.conf.js",
+    "automation:shahar": "set NODE_ENV=shahar && npx wdio run ./wdio.conf.js",
     "filter-single-post": "py .\\filtering\\filter_words.py \"one_post.json\"",
     "save-data": "node save-data.js"
   },
