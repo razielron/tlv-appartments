@@ -1,31 +1,6 @@
 const config = require('../../config');
-const rawAutomaton = require('./automaton.json');
+const automaton = require('./automaton.json');
 const { fillAllData } = require('./extractData');
-
-let automaton = initAutomata(rawAutomaton);
-
-function initAutomata(automaton) {
-    let currentOutState;
-    let filterOutStates = config.filterOutStates;
-
-    for (const [fromState, toAllStates] of Object.entries(automaton)) {
-        for (const [toState, filterArr] of Object.entries(toAllStates)) {
-            for(let i = 0; i < filterOutStates.length; i++) {
-
-                currentOutState = filterOutStates[i];
-
-                if(toState === currentOutState) {
-                    if(!toAllStates[config.endSate]) toAllStates[config.endSate] = [];
-                    toAllStates[config.endSate] = [...new Set([...toAllStates[config.endSate],...filterArr])]
-                    delete toAllStates[currentOutState];
-                    i = filterOutStates.length;
-                }
-            }
-        }
-    }
-
-    return automaton;
-}
 
 function smartSplit(postText) {
     let postArr;

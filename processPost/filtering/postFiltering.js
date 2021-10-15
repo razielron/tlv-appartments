@@ -8,6 +8,12 @@ function isMatch(postData) {
         automaton: stateArr[stateArr.length - 1]['state'] !== config.endSate,
         isInPriceRange: isInPriceRange(postData['price']),
         isInRoomsRange: isInRoomsRange(postData['rooms']),
+        isRoommateMatchConfig: isRoommateMatchConfig(postData['roommate']),
+        isFemaleRoommateMatchConfig: isFemaleRoommateMatchConfig(postData['femaleRoommate']) || isRoommateMatchConfig(postData['roommate']),
+        isMaleRoommateMatchConfig: isMaleRoommateMatchConfig(postData['maleRoommate']) || isRoommateMatchConfig(postData['roommate']),
+        isSabletMatchConfig: isSabletMatch(postData['sablet']),
+        isStudioMatchConfig: isStudioMatch(postData['studio']),
+        isUnitMatchConfig: isUnitMatch(postData['unit']),
     }
     isMatched['isAllMatch'] = isAllMatch(isMatched);
 
@@ -32,7 +38,7 @@ function isInPriceRange(priceArr) {
         currentPrice = priceArr[i].replace(/\D/g,'');
         currentPrice = parseInt(currentPrice);
 
-        if(currentPrice >= config.priceRange[0] && currentPrice <= config.priceRange[1]) {
+        if(currentPrice >= config['filters']['price'][0] && currentPrice <= config['filters']['price'][1]) {
             return true;
         }
     }
@@ -66,12 +72,36 @@ function isInRoomsRange(roomsArr) {
     for(let i = 0; i < roomsArr.length; i++) {
         currentRoomNum = convertTextToNum(roomsArr[i]);
 
-        if(currentRoomNum >= config.roomsRange[0] && currentRoomNum <= config.roomsRange[1]) {
+        if(currentRoomNum >= config['filters']['rooms'][0] && currentRoomNum <= config['filters']['rooms'][1]) {
             return true;
         }
     }
 
     return false;
+}
+
+function isRoommateMatchConfig(roomateArr) {
+    return !!roomateArr.length === config['filters']['roommate'];
+}
+
+function isFemaleRoommateMatchConfig(femaleRoomateArr) {
+    return !!femaleRoomateArr.length === config['filters']['femaleRoommate'];
+}
+
+function isMaleRoommateMatchConfig(maleRoomateArr) {
+    return !!maleRoomateArr.length === config['filters']['maleRoommate'];
+}
+
+function isSabletMatch(sabletArr) {
+    return !!sabletArr.length === config['filters']['sablet'];
+}
+
+function isStudioMatch(studioArr) {
+    return !!studioArr.length === config['filters']['studio'];
+}
+
+function isUnitMatch(unitArr) {
+    return !!unitArr.length === config['filters']['unit'];
 }
 
 module.exports = {

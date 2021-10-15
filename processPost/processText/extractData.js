@@ -2,71 +2,28 @@ const config = require('../../config');
 const { isStreet } = require('../../govData');
 
 function fillAllData(postData, splitedText) {
-    postData['rooms'] = getRooms(postData['stateArr']);
-    postData['possibleStreets'] = getStreet(postData['stateArr']);
-    postData['matchStreets'] = getSimilarStreets(splitedText);
-    postData['phone'] = getPhone(postData['stateArr']);
-    postData['price'] = getPrice(postData['stateArr']);
+    let currentState, configAutomatonToDataObj;
+
+    postData = initPostData(postData);
+    postData['similarStreets'] = getSimilarStreets(splitedText);
+
+    for (let i = 0; i < postData['stateArr'].length; i++) {
+        currentState = postData['stateArr'][i]['state'];
+
+        if(configAutomatonToDataObj = config.automatonToDataConfig[currentState]) {
+            postData[configAutomatonToDataObj['prop']].push(postData['stateArr'][i + configAutomatonToDataObj['dataIndex']]['matchedWord']); //TODO: check that i+x is smaller than arr length
+        }
+    }
 
     return postData;
 }
 
-function getIndexesOfState(stateArr, state) {
-    let indexes = [];
-
-    for(let i = 0; i < stateArr.length; i++)
-        if(stateArr[i]['state'] === state)
-            indexes.push(i);
-    
-    return indexes;
-}
-
-function getRooms(stateArr) {
-    let possibleRoomsArr = [], currentState;
-    let roomStateIndexes = getIndexesOfState(stateArr, config.roomState);
-
-    for(let i = 0; i < roomStateIndexes.length; i++) {
-        currentState = stateArr[roomStateIndexes[i] - 1];
-        possibleRoomsArr.push(currentState['matchedWord']);
+function initPostData(postData) {
+    for (const [key, value] of Object.entries(config.automatonToDataConfig)) {
+        postData[value['prop']] = [];
     }
 
-    return possibleRoomsArr;
-}
-
-function getPrice(stateArr) {
-    let possiblePricesArr = [], currentState;
-    let priceStateIndexes = getIndexesOfState(stateArr, config.priceState);
-
-    for(let i = 0; i < priceStateIndexes.length; i++) {
-        currentState = stateArr[priceStateIndexes[i]];
-        possiblePricesArr.push(currentState['matchedWord']);
-    }
-
-    return possiblePricesArr;
-}
-
-function getStreet(stateArr) {
-    let possibleStreetsArr = [], currentState;
-    let streetStateIndexes = getIndexesOfState(stateArr, config.streetState);
-
-    for(let i = 0; i < streetStateIndexes.length; i++) {
-        currentState = stateArr[streetStateIndexes[i]];
-        possibleStreetsArr.push(currentState['matchedWord']);
-    }
-
-    return possibleStreetsArr;
-}
-
-function getPhone(stateArr) {
-    let possiblePhonesArr = [], currentState;
-    let phoneStateIndexes = getIndexesOfState(stateArr, config.phoneState);
-
-    for(let i = 0; i < phoneStateIndexes.length; i++) {
-        currentState = stateArr[phoneStateIndexes[i]];
-        possiblePhonesArr.push(currentState['matchedWord']);
-    }
-
-    return possiblePhonesArr;
+    return postData;
 }
 
 function getSimilarStreets(postTextArr) {

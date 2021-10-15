@@ -4,7 +4,7 @@ const creds = require('../creds');
 const config = require('../config');
 const { isProcessable } = require('./filtering/preFiltering');
 const { isMatch } = require('./filtering/postFiltering');
-const { processText } = require('./processText/processText')
+const { processText } = require('./processText/processText');
 
 const bot = new TelegramBot(creds.telegramToken, {polling: true});
 let MatchPostsCount = 0, UnmatchPostsCount = 0;
@@ -51,12 +51,12 @@ function printResult(postData) {
 
 function sendMatchMessage(postData) { 
     let message = `${MatchPostsCount}`;
-    message += `\nמספר חדרים: ${postData.rooms}`;
-    message += `\nרחובות אפשריים: ${postData.possibleStreets}`;
-    message += `\nהתאמת רחובות: ${postData.matchStreets}`;
-    message += `\nמחיר: ${postData.price}`;
-    message += `\nטלפון: ${postData.phone}`;
-    message += `\n${postData.postUrl}`;
+    message += `\nמספר חדרים: ${postData['rooms']}`;
+    message += `\nרחובות אפשריים: ${postData['street']}`;
+    message += `\nהתאמת רחובות: ${postData['similarStreets']}`;
+    message += `\nמחיר: ${postData['price']}`;
+    message += `\nטלפון: ${postData['phone']}`;
+    message += `\n${postData['postUrl']}`;
 
     bot.sendMessage(config.channelId, message, {disable_web_page_preview: true});
 }
@@ -83,8 +83,6 @@ function matchProcess(postData) {
 function processPost(postData) {
     let matchData = getDataByFile(config.matchPath);
     let unmatchData = getDataByFile(config.unmatchPath);
-    let singleRunMatch = getDataByFile(config.singleRunMatchPath);
-    let singleRunUnmatch = getDataByFile(config.singleRunUnmatchPath);
 
     if(!isProcessable(postData, matchData['data'], unmatchData['data'])) {
         return console.log('Prefiltering: True');
