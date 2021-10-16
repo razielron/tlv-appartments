@@ -20,7 +20,7 @@ function fillAllData(postData, splitedText) {
 
 function initPostData(postData) {
     for (const [key, value] of Object.entries(config.automatonToDataConfig)) {
-        postData[value['prop']] = [];
+        if(!postData[value['prop']]) postData[value['prop']] = [];
     }
 
     return postData;
