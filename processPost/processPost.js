@@ -42,7 +42,7 @@ function printResult(postData) {
 
     for(let key in postData)
         if(key !== 'postText')
-        postDataNoText[key] = postData[key];
+            postDataNoText[key] = postData[key];
 
     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RESULT @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
     console.log({postDataNoText});

@@ -1,16 +1,19 @@
 const config = require('../../config');
 
 function isMatch(postData) {
-    let stateArr, isMatched;
-
+    let stateArr, isMaleRoommate, isFemaleRommate, isRoommate, isMatched;
+    
+    isRoommate = isRoommateMatchConfig(postData['roommate']);
+    isFemaleRommate = isFemaleRoommateMatchConfig(postData['femaleRoommate']);
+    isMaleRoommate = isMaleRoommateMatchConfig(postData['maleRoommate']);
     stateArr = postData['stateArr'];
+
     isMatched = {
         automaton: stateArr[stateArr.length - 1]['state'] !== config.endSate,
         isInPriceRange: isInPriceRange(postData['price']),
         isInRoomsRange: isInRoomsRange(postData['rooms']),
-        isRoommateMatchConfig: isRoommateMatchConfig(postData['roommate']),
-        isFemaleRoommateMatchConfig: isFemaleRoommateMatchConfig(postData['femaleRoommate']) || isRoommateMatchConfig(postData['roommate']),
-        isMaleRoommateMatchConfig: isMaleRoommateMatchConfig(postData['maleRoommate']) || isRoommateMatchConfig(postData['roommate']),
+        isFemaleRoommateMatchConfig: isFemaleRommate || isRoommate,
+        isMaleRoommateMatchConfig: isMaleRoommate || isRoommate,
         isSabletMatchConfig: isSabletMatch(postData['sablet']),
         isStudioMatchConfig: isStudioMatch(postData['studio']),
         isUnitMatchConfig: isUnitMatch(postData['unit']),
@@ -58,8 +61,8 @@ function convertTextToNum(text) {
     } else if((/חמי?ש/).test(text)) {
         return 5;
     } else {
-        textTemp = text.replace(/\D/g, '');
-        return parseInt(textTemp);
+        textTemp = text.match(/[+-]?\d+(\.\d+)?/g, '');
+        return parseFloat(textTemp[0]);
     }
 }
 
@@ -81,27 +84,27 @@ function isInRoomsRange(roomsArr) {
 }
 
 function isRoommateMatchConfig(roomateArr) {
-    return !!roomateArr.length === config['filters']['roommate'];
+    return !!roomateArr.length;
 }
 
 function isFemaleRoommateMatchConfig(femaleRoomateArr) {
-    return !!femaleRoomateArr.length === config['filters']['femaleRoommate'];
+    return config['filters']['femaleRoommate'] ? (!!femaleRoomateArr.length === config['filters']['femaleRoommate']) : true;
 }
 
 function isMaleRoommateMatchConfig(maleRoomateArr) {
-    return !!maleRoomateArr.length === config['filters']['maleRoommate'];
+    return config['filters']['maleRoommate'] ? (!!maleRoomateArr.length === config['filters']['maleRoommate']) : true;
 }
 
 function isSabletMatch(sabletArr) {
-    return !!sabletArr.length === config['filters']['sablet'];
+    return config['filters']['sablet'] ? (!!sabletArr.length === config['filters']['sablet']) : true;
 }
 
 function isStudioMatch(studioArr) {
-    return !!studioArr.length === config['filters']['studio'];
+    return config['filters']['studio'] ? (!!studioArr.length === config['filters']['studio']) : true;
 }
 
 function isUnitMatch(unitArr) {
-    return !!unitArr.length === config['filters']['unit'];
+    return config['filters']['unit'] ? (!!unitArr.length === config['filters']['unit']) : true;
 }
 
 module.exports = {

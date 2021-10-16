@@ -39,8 +39,6 @@ module.exports = {
     filters: {
         rooms: [2.5, 3.5],
         price: [6000, 9000],
-        roommate: false,
-        femaleroommate: false,
         maleroommate: false,
         sablet: false,
         studio: false,
