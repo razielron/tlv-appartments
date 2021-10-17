@@ -8,8 +8,11 @@
     "cron:shahar": "set NODE_ENV=shahar && node cron.js",
     "automation:raziel": "set NODE_ENV=raziel && npx wdio run ./wdio.conf.js",
     "automation:shahar": "set NODE_ENV=shahar && npx wdio run ./wdio.conf.js",
-    "filter-single-post": "py .\\filtering\\filter_words.py \"one_post.json\"",
-    "save-data": "node save-data.js"
+    "automation:ofri": "set NODE_ENV=ofri && npx wdio run ./wdio.conf.js",
+    "test-post-filtering:raziel": "set NODE_ENV=raziel && node ./testing/testPostFiltering.js",
+    "test-post-filtering:shahar": "set NODE_ENV=shahar && node ./testing/testPostFiltering.js",
+    "test-post-filtering:ofri": "set NODE_ENV=ofri && node ./testing/testPostFiltering.js",
+    "processLocation:raziel": "set NODE_ENV=raziel && node ./maps/processLocation.js"
   },
   "repository": {
     "type": "git",
@@ -22,6 +25,7 @@
   },
   "homepage": "https://github.com/razielron/tlv-appartments#readme",
   "dependencies": {
+    "@googlemaps/google-maps-services-js": "^3.2.6",
     "@wdio/cli": "^7.12.6",
     "@wdio/repl": "^7.12.5",
     "axios": "^0.21.4",
