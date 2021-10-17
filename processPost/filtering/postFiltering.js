@@ -1,19 +1,17 @@
 const config = require('../../config');
 
 function isMatch(postData) {
-    let stateArr, isMaleRoommate, isFemaleRommate, isRoommate, isMatched;
+    let stateArr, isRoommate, isMatched;
     
     stateArr = postData['stateArr'];
     isRoommate = isRoommateMatchConfig(postData['roommate']);
-    isFemaleRommate = isFemaleRoommateMatchConfig(postData['femaleRoommate']);
-    isMaleRoommate = isMaleRoommateMatchConfig(postData['maleRoommate']);
 
     isMatched = {
-        automaton: stateArr[stateArr.length - 1]['state'] !== config.endSate && stateArr.length > 1,
+        automaton: stateArr[stateArr.length - 1]['state'] !== config.endSate && isAutomatonMadeProgress(stateArr),
         isInPriceRange: isInPriceRange(postData['price']),
         isInRoomsRange: isInRoomsRange(postData['rooms']),
-        isFemaleRoommateMatchConfig: isFemaleRommate || isRoommate,
-        isMaleRoommateMatchConfig: isMaleRoommate || isRoommate,
+        isFemaleRoommateMatchConfig: isFemaleRoommateMatchConfig(postData['femaleRoommate'], isRoommate),
+        isMaleRoommateMatchConfig: isMaleRoommateMatchConfig(postData['maleRoommate'], isRoommate),
         isSabletMatchConfig: isSabletMatch(postData['sablet']),
         isStudioMatchConfig: isStudioMatch(postData['studio']),
         isUnitMatchConfig: isUnitMatch(postData['unit']),
@@ -87,24 +85,46 @@ function isRoommateMatchConfig(roomateArr) {
     return !!roomateArr.length;
 }
 
-function isFemaleRoommateMatchConfig(femaleRoomateArr) {
-    return config['filters']['femaleRoommate'] ? (!!femaleRoomateArr.length === config['filters']['femaleRoommate']) : true;
+function isFemaleRoommateMatchConfig(femaleRoomateArr, isRoomate) {
+    let isFemaleRoomate = !!femaleRoomateArr.length || isRoomate;
+    let configFemaleRoommate = config['filters']['femaleRoommate'];
+
+    return (configFemaleRoommate !== undefined) ? (isFemaleRoomate === configFemaleRoommate) : true;
 }
 
-function isMaleRoommateMatchConfig(maleRoomateArr) {
-    return config['filters']['maleRoommate'] ? (!!maleRoomateArr.length === config['filters']['maleRoommate']) : true;
+function isMaleRoommateMatchConfig(maleRoomateArr, isRoomate) {
+    let isMaleRoomate = !!maleRoomateArr.length || isRoomate;
+    let configMaleRoommate = config['filters']['maleRoommate'];
+
+    return (configMaleRoommate !== undefined) ? (isMaleRoomate === configMaleRoommate) : true;
 }
 
 function isSabletMatch(sabletArr) {
-    return config['filters']['sablet'] ? (!!sabletArr.length === config['filters']['sablet']) : true;
+    let configSablet = config['filters']['sablet'];
+
+    return (configSablet !== undefined) ? (!!sabletArr.length === configSablet) : true;
 }
 
 function isStudioMatch(studioArr) {
-    return config['filters']['studio'] ? (!!studioArr.length === config['filters']['studio']) : true;
+    let configStudio = config['filters']['studio'];
+
+    return (configStudio !== undefined) ? (!!studioArr.length === configStudio) : true;
 }
 
 function isUnitMatch(unitArr) {
-    return config['filters']['unit'] ? (!!unitArr.length === config['filters']['unit']) : true;
+    let configUnit = config['filters']['unit'];
+
+    return (configUnit !== undefined) ? (!!unitArr.length === configUnit) : true;
+}
+
+function isAutomatonMadeProgress(stateArr) {
+    for(let i = 0; i < stateArr.length; i ++) {
+        if(stateArr[i]['state'] !== 'q0' && stateArr[i]['state'] !== 'q1') {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 module.exports = {
