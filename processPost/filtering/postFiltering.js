@@ -3,13 +3,13 @@ const config = require('../../config');
 function isMatch(postData) {
     let stateArr, isMaleRoommate, isFemaleRommate, isRoommate, isMatched;
     
+    stateArr = postData['stateArr'];
     isRoommate = isRoommateMatchConfig(postData['roommate']);
     isFemaleRommate = isFemaleRoommateMatchConfig(postData['femaleRoommate']);
     isMaleRoommate = isMaleRoommateMatchConfig(postData['maleRoommate']);
-    stateArr = postData['stateArr'];
 
     isMatched = {
-        automaton: stateArr[stateArr.length - 1]['state'] !== config.endSate,
+        automaton: stateArr[stateArr.length - 1]['state'] !== config.endSate && stateArr.length > 1,
         isInPriceRange: isInPriceRange(postData['price']),
         isInRoomsRange: isInRoomsRange(postData['rooms']),
         isFemaleRoommateMatchConfig: isFemaleRommate || isRoommate,

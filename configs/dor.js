@@ -1,7 +1,7 @@
 module.exports = {
     channelId: '@tlv_apartments',
-    matchPath: 'postsData.json',
-    unmatchPath: 'unmatchData.json',
+    matchPath: 'dorMatch.json',
+    unmatchPath: 'dorUnmatch.json',
     singleRunMatchPath: 'singleRunMatch.json',
     singleRunUnmatchPath: 'singleRunUnmatch.json',
     streetsDataPath: 'streetsData.json',
@@ -37,10 +37,10 @@ module.exports = {
         q8: { prop: 'unit', dataIndex: 0 }
     },
     filters: {
-        rooms: [2.5, 3.5],
-        price: [6000, 9000],
+        rooms: [4, 4],
+        price: [8000, 9000],
+        femaleRoommate: false,
         maleRoommate: false,
-        sablet: false,
         studio: false,
         unit: false
     }
