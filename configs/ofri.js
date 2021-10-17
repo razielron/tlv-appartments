@@ -1,7 +1,7 @@
 module.exports = {
-    channelId: '@tlv_apartments',
-    matchPath: 'dorMatch.json',
-    unmatchPath: 'dorUnmatch.json',
+    channelId: '@app2ofri',
+    matchPath: 'ofriMatch.json',
+    unmatchPath: 'ofriUnmatch.json',
     singleRunMatchPath: 'singleRunMatch.json',
     singleRunUnmatchPath: 'singleRunUnmatch.json',
     streetsDataPath: 'streetsData.json',
@@ -41,6 +41,7 @@ module.exports = {
         price: [8000, 9000],
         femaleRoommate: false,
         maleRoommate: false,
+        sablet: false,
         studio: false,
         unit: false
     }
