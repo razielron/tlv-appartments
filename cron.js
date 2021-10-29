@@ -8,7 +8,7 @@ let job = new CronJob('0 */30 8-00/1 * * *', function() {
     let isWin = process.platform.includes('win');
     let cmd = isWin ? 'npm.cmd' : 'cpm';
     
-    const automation = spawn(cmd, ['run', 'automation']);
+    const automation = spawn(cmd, ['run', 'automation:raziel']);
 
     automation.stdout.on('data', (data) => {
       console.log(`${data}`);
