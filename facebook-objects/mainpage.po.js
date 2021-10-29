@@ -33,6 +33,13 @@ class MainPage {
     }
     async getImages(elem) { return elem.$$('img[class="i09qtzwb n7fi1qx3 datstx6m pmk7jnqg j9ispegn kr520xx4 k4urcfbm"]'); }
 
+    getCreatedDateFromUrl(url) {
+        let tempIndex1 = url.indexOf('posts/') + 6;
+        let tempIndex2 = url.indexOf('/', tempIndex1);
+        
+        return url.slice(tempIndex1, tempIndex2);
+    }
+    
     async sortByRecent() {
         await this.arrowDropDown.waitForExist({timeout: 60000});
         await this.arrowDropDown.scrollIntoView();
@@ -92,7 +99,7 @@ class MainPage {
     }
 
     async getDataofSinglePost(postNum) {
-        let allPosts, currentPost, postText, numOfPosts, postUrl, postUrl2;
+        let allPosts, currentPost, postText, numOfPosts, postUrl, createdDate;
         console.log('777777777777777777777777777')
         await browser.waitUntil(async ()=> {
             console.log('8888888888888888888888888888888')
@@ -106,9 +113,10 @@ class MainPage {
         if(currentPost.isExisting()) {
             postUrl = await browser.getUrl();
             postText = await currentPost.getText();
+            createdDate = getCreatedDateFromUrl(postUrl);
         }
         console.log('999999999999999999999999999999')
-        let postData = {postNum, postUrl, postText};
+        let postData = {postNum, createdDate, postUrl, postText};
         processPost(postData);
         //console.log({postData});
     }
