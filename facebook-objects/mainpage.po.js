@@ -149,7 +149,8 @@ class MainPage {
             sliceFrom = Math.max(postText.indexOf('·\n'), 0);
             SliceTo = postText.indexOf('Like\nComment');
             postText = postText.slice(sliceFrom, SliceTo);
-            postData = {postNum, postUrl, postText, isContainsPic};
+            createdDate = getCreatedDateFromUrl(postUrl);
+            postData = {postNum, createdDate, postUrl, postText, isContainsPic};
             console.log({postUrl});
 
             if(postUrl !== '#') {
