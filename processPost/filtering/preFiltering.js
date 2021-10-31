@@ -1,14 +1,16 @@
 const config = require('../../config');
 const stringSimilarity = require("string-similarity");
-const { isUrlExists, getAllText } = require('../../mongodb/mongodbClient');
+const MongoClient = require('../../mongodb/mongodbClient');
+
+const mongoClient = new MongoClient();
 
 async function isProcessable(postData) {
     return postData['isContainsPic']
         && containsHebrew(postData['postText'])
-        && !isAlreadySaved(config.mongodb.matchCollection, postData)
-        && !isAlreadySaved(config.mongodb.unmatchCollection, postData)
-        && !isSameSavedText(config.mongodb.matchCollection, postData)
-        && !isSameSavedText(config.mongodb.unmatchCollection, postData);
+        && !(await isAlreadySaved(config.mongodb.matchCollection, postData))
+        && !(await isAlreadySaved(config.mongodb.unmatchCollection, postData))
+        && !(await isSameSavedText(config.mongodb.matchCollection, postData))
+        && !(await isSameSavedText(config.mongodb.unmatchCollection, postData));
 }
 
 function containsHebrew(str) {
@@ -16,14 +18,18 @@ function containsHebrew(str) {
 }
 
 async function isAlreadySaved(collectionName, postData) {
-    let res = await isUrlExists(collectionName, postData['postUrl']);
+    let res = await mongoClient.isUrlExists(collectionName, postData['postUrl']);
+    console.log('*********************************************')
+    console.log({res})
+    console.log(!res.length)
+    console.log('*********************************************')
 
     return res.length;
 }
 
 async function isSameSavedText(collectionName, postData) {
     let similarity = 0;
-    let postsTextArr = await getAllText(collectionName);
+    let postsTextArr = await mongoClient.getAllText(collectionName);
 
     for(let i = 0; i < postsTextArr.length; i++) {
         similarity = stringSimilarity.compareTwoStrings(postsTextArr[i].postText, postData.postText);

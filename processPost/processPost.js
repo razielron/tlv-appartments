@@ -4,8 +4,9 @@ const config = require('../config');
 const { isProcessable } = require('./filtering/preFiltering');
 const { isMatch } = require('./filtering/postFiltering');
 const { processText } = require('./processText/processText');
-const { getLastPostId, saveMatchPost, saveUnmatchPost } = require('../mongodb/mongodbClient');
+const MongoClient = require('../mongodb/mongodbClient');
 
+const mongoClient = new MongoClient();
 let MatchPostsCount = 0, UnmatchPostsCount = 0;
 
 const bot = new TelegramBot(creds.telegramToken, {polling: true});
@@ -22,31 +23,34 @@ function sendMatchMessage(postData) {
     bot.sendMessage(config.channelId, message, {disable_web_page_preview: true});
 }
 
-function processMatch(postData) {
+async function processMatch(postData) {
     MatchPostsCount++;
-    postData['postNum'] = getLastPostId(true) + 1;
+    postData['postNum'] = await mongoClient.getLastPostId(true) + 1;
     sendMatchMessage(postData);
-    saveMatchPost(postData);
+    await mongoClient.saveMatchPost(postData);
 }
 
-function processUnmatch(postData) {
+async function processUnmatch(postData) {
     UnmatchPostsCount++;
-    postData['postNum'] = getLastPostId(false) + 1;
-    saveUnmatchPost(postData);
+    postData['postNum'] = await mongoClient.getLastPostId(false) + 1;
+    await mongoClient.saveUnmatchPost(postData);
 }
 
-function processPost(postData) {
-    if(!isProcessable(postData)) {
+async function processPost(postData) {
+    let preFiltering = await isProcessable(postData);
+
+    if(!preFiltering) {
         return console.log('Prefiltering: True');
     }
     
+    postData['runts'] = global.runts;
     postData = processText(postData);
     postData['isMatch'] = isMatch(postData);
 
     if(postData['isMatch']['isAllMatch']) {
-        processMatch(postData);
+        await processMatch(postData);
     } else {
-        processUnmatch(postData);
+        await processUnmatch(postData);
     }
 
     console.log(`------------------------ RUN RESULTS ------------------------`);

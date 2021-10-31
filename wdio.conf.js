@@ -1,4 +1,4 @@
-const { createCollections } = require ('./mongodb/mongodbClient');
+const MongodbClient = require ('./mongodb/mongodbClient');
 
 exports.config = {
     //
@@ -218,7 +218,9 @@ exports.config = {
      * @param {Array.<String>} specs List of spec file paths that are to be run
      */
     beforeSession: async function (config, capabilities, specs) {
-        await createCollections();
+        let mongoClient = new MongodbClient();
+        await mongoClient.createCollections();
+        global.runts = Date.now();
     },
     /**
      * Gets executed before test execution begins. At this point you can access to all global
