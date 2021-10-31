@@ -1,56 +1,17 @@
 const TelegramBot = require('node-telegram-bot-api');
-const fs = require('fs');
 const creds = require('../creds');
 const config = require('../config');
 const { isProcessable } = require('./filtering/preFiltering');
 const { isMatch } = require('./filtering/postFiltering');
 const { processText } = require('./processText/processText');
+const { getLastPostId, saveMatchPost, saveUnmatchPost } = require('../mongodb/mongodbClient');
 
-const bot = new TelegramBot(creds.telegramToken, {polling: true});
 let MatchPostsCount = 0, UnmatchPostsCount = 0;
 
-function deleteBeforeRunFiles() {
-    deleteFile(config.singleRunMatchPath);
-    deleteFile(config.singleRunUnmatchPath);
-}
-
-function deleteFile(path) {
-    if(fs.existsSync(path)) {
-        fs.unlinkSync(path)
-    }
-}
-
-function getDataByFile(path) {
-    let allData = { data: [] };
-
-    if(fs.existsSync(path)) {
-        allData = fs.readFileSync(path, 'utf8');
-        allData = JSON.parse(allData);
-    }
-
-    return allData;
-}
-
-function saveDataToFile(filePath, allData, postData) {
-    console.log(`Saving post ${postData.postUrl} to ${filePath}`);
-    allData.data.push(postData);
-    fs.writeFileSync(filePath, JSON.stringify(allData));
-}
-
-function printResult(postData) {
-    let postDataNoText = {};
-
-    for(let key in postData)
-        if(key !== 'postText')
-            postDataNoText[key] = postData[key];
-
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RESULT @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-    console.log({postDataNoText});
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RESULT @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-}
+const bot = new TelegramBot(creds.telegramToken, {polling: true});
 
 function sendMatchMessage(postData) { 
-    let message = `${MatchPostsCount}`;
+    let message = `${postData['postNum']}`;
     message += `\nמספר חדרים: ${postData['rooms']}`;
     message += `\nרחובות אפשריים: ${postData['street']}`;
     message += `\nהתאמת רחובות: ${postData['similarStreets']}`;
@@ -61,40 +22,31 @@ function sendMatchMessage(postData) {
     bot.sendMessage(config.channelId, message, {disable_web_page_preview: true});
 }
 
-function unmatchProcess(postData) {
-    let unmatchData = getDataByFile(config.unmatchPath);
-    let singleRunUnmatch = getDataByFile(config.singleRunUnmatchPath);
-
-    UnmatchPostsCount++;
-    saveDataToFile(config.unmatchPath, unmatchData, postData);
-    saveDataToFile(config.singleRunUnmatchPath, singleRunUnmatch, postData);
+function processMatch(postData) {
+    MatchPostsCount++;
+    postData['postNum'] = getLastPostId(true) + 1;
+    sendMatchMessage(postData);
+    saveMatchPost(postData);
 }
 
-function matchProcess(postData) {
-    let matchData = getDataByFile(config.matchPath);
-    let singleRunMatch = getDataByFile(config.singleRunMatchPath);
-
-    MatchPostsCount++
-    sendMatchMessage(postData);
-    saveDataToFile(config.matchPath, matchData, postData);
-    saveDataToFile(config.singleRunMatchPath, singleRunMatch, postData);
+function processUnmatch(postData) {
+    UnmatchPostsCount++;
+    postData['postNum'] = getLastPostId(false) + 1;
+    saveUnmatchPost(postData);
 }
 
 function processPost(postData) {
-    let matchData = getDataByFile(config.matchPath);
-    let unmatchData = getDataByFile(config.unmatchPath);
-
-    if(!isProcessable(postData, matchData['data'], unmatchData['data'])) {
+    if(!isProcessable(postData)) {
         return console.log('Prefiltering: True');
     }
-        
+    
     postData = processText(postData);
     postData['isMatch'] = isMatch(postData);
 
     if(postData['isMatch']['isAllMatch']) {
-        matchProcess(postData);
+        processMatch(postData);
     } else {
-        unmatchProcess(postData);
+        processUnmatch(postData);
     }
 
     console.log(`------------------------ RUN RESULTS ------------------------`);
@@ -104,6 +56,5 @@ function processPost(postData) {
 }
 
 module.exports = {
-    processPost,
-    deleteBeforeRunFiles
+    processPost
 }

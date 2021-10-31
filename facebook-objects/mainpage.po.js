@@ -131,7 +131,7 @@ class MainPage {
     }
 
     async getPostDataFromGroup(currentPost, postNum) {
-        let postUrlElem, postUrl, postText, postData, postIamges, isContainsPic, sliceFrom, SliceTo;
+        let postUrlElem, postUrl, postText, postData, postIamges, isContainsPic, sliceFrom, SliceTo, createdDate;
 
         await this.pressSeeMoreIfExists(currentPost);
         postUrlElem = await this.getAllLinks(currentPost);
@@ -149,7 +149,7 @@ class MainPage {
             sliceFrom = Math.max(postText.indexOf('·\n'), 0);
             SliceTo = postText.indexOf('Like\nComment');
             postText = postText.slice(sliceFrom, SliceTo);
-            createdDate = getCreatedDateFromUrl(postUrl);
+            createdDate = this.getCreatedDateFromUrl(postUrl);
             postData = {postNum, createdDate, postUrl, postText, isContainsPic};
             console.log({postUrl});
 

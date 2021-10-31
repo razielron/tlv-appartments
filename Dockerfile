@@ -3,5 +3,4 @@ WORKDIR /usr/src/bot
 COPY package*.json ./
 RUN npm install
 COPY . .
-ENTRYPOINT ["tail"]
-CMD ["-f","/dev/null"]
+CMD ["tail", "-f","/dev/null"]

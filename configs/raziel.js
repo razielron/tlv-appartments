@@ -43,5 +43,14 @@ module.exports = {
         sablet: false,
         studio: false,
         unit: false
+    },
+    mongodb: {
+        fullUrl: 'mongodb://rootuser:rootpass@mongodb:27017',
+        url: 'mongodb://mongodb:27017',
+        dbName: 'tlvaptbot',
+        matchCollection: 'razielMatch',
+        unmatchCollection: 'razielUnmatch',
+        userName: 'rootuser',
+        password: 'rootpass'
     }
 }

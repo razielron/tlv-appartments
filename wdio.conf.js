@@ -1,4 +1,4 @@
-const { deleteBeforeRunFiles } = require ('./processPost/processPost');
+const { createCollections } = require ('./mongodb/mongodbClient');
 
 exports.config = {
     //
@@ -217,15 +217,8 @@ exports.config = {
      * @param {Array.<Object>} capabilities list of capabilities details
      * @param {Array.<String>} specs List of spec file paths that are to be run
      */
-    beforeSession: function (config, capabilities, specs) {
-        deleteBeforeRunFiles();
-
-        /* global.allData = { postsData: [] };
-        
-        if(fs.existsSync('postsData.json')) {
-            global.allData = fs.readFileSync('postsData.json', 'utf8');
-            global.allData = JSON.parse(global.allData);
-        } */
+    beforeSession: async function (config, capabilities, specs) {
+        await createCollections();
     },
     /**
      * Gets executed before test execution begins. At this point you can access to all global
