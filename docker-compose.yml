@@ -2,8 +2,30 @@
 # Add the `-d` flag at the end for detached execution
 # Change "SE_NODE_GRID_URL=http://localhost:4444" to the URL/IP where the Grid is accesible.
 # To stop the execution, hit Ctrl+C, and then `docker-compose -f docker-compose-v3.yml down`
-version: "3"
+version: "3.8"
 services:
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - 27017:27017
+    volumes:
+      - data:/data
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=rootuser
+      - MONGO_INITDB_ROOT_PASSWORD=rootpass
+  
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=rootuser
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=rootpass
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+
   chrome:
     image: selenium/standalone-chrome:4.0.0-20211025
     shm_size: 2gb
@@ -16,3 +38,6 @@ services:
       - NODE_ENV=raziel
     volumes:
       - .:/usr/src/bot
+
+volumes:
+  data: {}

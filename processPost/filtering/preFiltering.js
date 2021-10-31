@@ -1,41 +1,44 @@
 const config = require('../../config');
 const stringSimilarity = require("string-similarity");
+const MongoClient = require('../../mongodb/mongodbClient');
 
-function isProcessable(postData, matchPostsArr, unmatchPostsArr) {
+const mongoClient = new MongoClient();
+
+async function isProcessable(postData) {
     return postData['isContainsPic']
         && containsHebrew(postData['postText'])
-        && !isAlreadySaved(matchPostsArr, postData)
-        && !isAlreadySaved(unmatchPostsArr, postData)
-        && !isSameSavedText(matchPostsArr, postData)
-        && !isSameSavedText(unmatchPostsArr, postData);
+        && !(await isAlreadySaved(config.mongodb.matchCollection, postData))
+        && !(await isAlreadySaved(config.mongodb.unmatchCollection, postData))
+        && !(await isSameSavedText(config.mongodb.matchCollection, postData))
+        && !(await isSameSavedText(config.mongodb.unmatchCollection, postData));
 }
 
 function containsHebrew(str) {
     return (/[\u0590-\u05FF]/).test(str);
 }
 
-function isAlreadySaved(postsArr, postData) {
-    for(let i = 0; i < postsArr.length; i++) {
-        if(postsArr[i].postUrl === postData.postUrl) {
-            console.log(`Already Saved, isMatch: ${postsArr[i]['isMatch']}`);
-            return true;
-        }
-    }
+async function isAlreadySaved(collectionName, postData) {
+    let res = await mongoClient.isUrlExists(collectionName, postData['postUrl']);
+    console.log('*********************************************')
+    console.log({res})
+    console.log(!res.length)
+    console.log('*********************************************')
 
-    return false;
+    return res.length;
 }
 
-function isSameSavedText(matchData, postData) {
+async function isSameSavedText(collectionName, postData) {
     let similarity = 0;
+    let postsTextArr = await mongoClient.getAllText(collectionName);
 
-    for(let i = 0; i < matchData.length; i++) {
-        similarity = stringSimilarity.compareTwoStrings(matchData[i].postText, postData.postText);
+    for(let i = 0; i < postsTextArr.length; i++) {
+        similarity = stringSimilarity.compareTwoStrings(postsTextArr[i].postText, postData.postText);
 
         if(similarity >= config.postTextSimilarityThreashold) {
             console.log(`Current Post: ${postData.postUrl}`);
-            console.log(`Similar to Post: ${matchData[i].postUrl}`);
+            console.log(`Similar to Post: ${postsTextArr[i].postUrl}`);
             console.log(`Similarity Prexentage: ${100 * similarity}%`);
-            console.log(`Same text as other post, isMatch: ${matchData[i]['isMatch']}`);
+            console.log(`Same text as other post, isMatch: ${postsTextArr[i]['isMatch']}`);
             return true;
         }
     }
