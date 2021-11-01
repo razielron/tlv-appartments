@@ -15,6 +15,9 @@ class MongodbClient {
     
         const unmatchCollection = await db.listCollections({name: config.mongodb.unmatchCollection}).next();
         if(!unmatchCollection) await db.createCollection(config.mongodb.unmatchCollection);
+
+        const yad2Collection = await db.listCollections({name: config.mongodb.yad2Collection}).next();
+        if(!yad2Collection) await db.createCollection(config.mongodb.yad2Collection);
     
         await this.client.close();
     }
@@ -68,6 +71,15 @@ class MongodbClient {
         const db = this.client.db(config.mongodb.dbName);
         const collection = db.collection(config.mongodb.unmatchCollection);
         const insertResult = await collection.insertOne(postData);
+        //console.log({insertResult});
+        await this.client.close();
+    }
+
+    async saveYad2Posts(postsArr) {
+        await this.client.connect();
+        const db = this.client.db(config.mongodb.dbName);
+        const collection = db.collection(config.mongodb.yad2Collection);
+        const insertResult = await collection.insertMany(postsArr);
         //console.log({insertResult});
         await this.client.close();
     }

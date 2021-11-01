@@ -21,7 +21,6 @@ async function isAlreadySaved(collectionName, postData) {
     let res = await mongoClient.isUrlExists(collectionName, postData['postUrl']);
     console.log('*********************************************')
     console.log({res})
-    console.log(!res.length)
     console.log('*********************************************')
 
     return res.length;
