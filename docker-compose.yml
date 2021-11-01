@@ -36,6 +36,7 @@ services:
       - chrome
     environment:
       - NODE_ENV=raziel
+      - TZ=Israel
     volumes:
       - .:/usr/src/bot
 
