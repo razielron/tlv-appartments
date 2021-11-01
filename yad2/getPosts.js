@@ -5,7 +5,8 @@ const creds = require('../creds');
 const config = require('../config');
 
 const mongoClient = new MongoClient();
-//const bot = new TelegramBot(creds.telegramToken, {polling: true});
+const bot = new TelegramBot(creds.telegramToken, {polling: true});
+let itemCounter = 0;
 
 async function getData() {
     let request = {
@@ -14,9 +15,6 @@ async function getData() {
     }
 
     let res = await axios(request);
-    // console.log({res});
-    // console.log(res.data);
-    // console.log(res.data.feed.feed_items);
 
     return res.data.feed.feed_items;
 }
@@ -26,6 +24,8 @@ function buildPostData(postsArr) {
 
     for(let i = 0; i < postsArr.length; i++) {
         tempPost = {
+            foundts: new Date(),
+            postNum: itemCounter++,
             postUrl: `https://www.yad2.co.il/s/c/${postsArr[i]['link_token']}`,
             price: postsArr[i]['price'],
             street: postsArr[i]['street'],
@@ -42,19 +42,20 @@ async function filterExistingPosts(postsArr) {
 
     for(let i = 0; i < postsArr.length; i++) {
         isExists = await mongoClient.isUrlExists(config.mongodb.yad2Collection, postsArr[i]['postUrl']);
-        if(!isExists.length) remainArr.push(postsArr[i]);
+        if(!isExists.length && postsArr[i]['postUrl']) remainArr.push(postsArr[i]);
     }
 
     return remainArr;
 }
 
 function sendData(postsArr) {
-    let message;
+    let message, postData;
 
     for(let i = 0; i < postsArr.length; i++) {
+        postData = postsArr[i];
         message = `${postData['postNum']}`;
         message += `\nמספר חדרים: ${postData['rooms']}`;
-        message += `\nרחובות אפשריים: ${postData['street']}`;
+        message += `\nרחוב: ${postData['street']}`;
         message += `\nמחיר: ${postData['price']}`;
         message += `\n${postData['postUrl']}`;
 
