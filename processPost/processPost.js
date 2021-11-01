@@ -7,9 +7,8 @@ const { processText } = require('./processText/processText');
 const MongoClient = require('../mongodb/mongodbClient');
 
 const mongoClient = new MongoClient();
-let MatchPostsCount = 0, UnmatchPostsCount = 0;
-
 const bot = new TelegramBot(creds.telegramToken, {polling: true});
+let MatchPostsCount = 0, UnmatchPostsCount = 0;
 
 function sendMatchMessage(postData) { 
     let message = `${postData['postNum']}`;

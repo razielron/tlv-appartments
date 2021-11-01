@@ -40,12 +40,16 @@ module.exports = {
         studio: false,
         unit: false
     },
+    yad2Urls: [
+        'https://www.yad2.co.il/api/feed/get?cat=2&subcat=2&city=5000&property=1&rooms=3-3.5&price=6000-9000&neighborhood=1461&z=12&isMapView=1&page=1'
+    ],
     mongodb: {
         fullUrl: 'mongodb://rootuser:rootpass@mongodb:27017',
         url: 'mongodb://mongodb:27017',
         dbName: 'tlvaptbot',
         matchCollection: 'razielMatch',
         unmatchCollection: 'razielUnmatch',
+        yad2Collection: 'razielYad2',
         userName: 'rootuser',
         password: 'rootpass'
     }
