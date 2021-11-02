@@ -72,14 +72,14 @@ exports.config = {
                 '--disable-background-timer-throttling',
 
                 // See https://chromium.googlesource.com/chromium/src/+/lkgr/headless/README.md
-                //'--headless',
+                '--headless',
                 //'--disable-gpu',
 
                 // Without a remote debugging port, Google Chrome exits immediately.
                 //'--remote-debugging-port=9222',
 
                 //
-                //'--window-size=1280,1024',
+                '--window-size=1280,1024',
                 '--start-maximized',
                 //'--port=4444'
             ],

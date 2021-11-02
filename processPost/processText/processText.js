@@ -4,7 +4,7 @@ const { fillAllData } = require('./extractData');
 
 function smartSplit(postText) {
     let postArr;
-    let delimiters = /\s|[a-zA-Z]/;
+    let delimiters = /\s|[a-zA-Z]|\*/;
 
     postArr = postText.split(delimiters);
     postArr = postArr.filter(word => word);
