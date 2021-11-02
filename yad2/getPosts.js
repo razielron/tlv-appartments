@@ -23,15 +23,17 @@ function buildPostData(postsArr) {
     let tempPost, remakeArr = [];
 
     for(let i = 0; i < postsArr.length; i++) {
-        tempPost = {
-            foundts: new Date(),
-            postNum: itemCounter++,
-            postUrl: `https://www.yad2.co.il/s/c/${postsArr[i]['link_token']}`,
-            price: postsArr[i]['price'],
-            street: postsArr[i]['street'],
-            rooms: postsArr[i]['Rooms_text']
+        if(postsArr[i]['link_token']) {
+            tempPost = {
+                foundts: new Date(),
+                postNum: itemCounter++,
+                postUrl: `https://www.yad2.co.il/s/c/${postsArr[i]['link_token']}`,
+                price: postsArr[i]['price'],
+                street: postsArr[i]['street'],
+                rooms: postsArr[i]['Rooms_text']
+            }
+            remakeArr.push(tempPost);
         }
-        remakeArr.push(tempPost);
     }
 
     return remakeArr;
@@ -42,7 +44,7 @@ async function filterExistingPosts(postsArr) {
 
     for(let i = 0; i < postsArr.length; i++) {
         isExists = await mongoClient.isUrlExists(config.mongodb.yad2Collection, postsArr[i]['postUrl']);
-        if(!isExists.length && postsArr[i]['postUrl']) remainArr.push(postsArr[i]);
+        if(!isExists.length) remainArr.push(postsArr[i]);
     }
 
     return remainArr;
@@ -73,7 +75,7 @@ async function processYad2() {
             await mongoClient.saveYad2Posts(postsArr);
             sendData(postsArr);
         } else {
-            console.log("nothing new");
+            console.log("Nothing New");
         }
     } catch(e) {
         console.log(e);

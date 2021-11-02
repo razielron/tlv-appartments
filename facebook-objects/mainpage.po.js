@@ -124,9 +124,11 @@ class MainPage {
     async pressSeeMoreIfExists(currentPost) {
         let seeMore = await this.seeMoreBtn(currentPost);
 
-        if(seeMore[0] && await seeMore[0].isExisting()) {
-            await seeMore[0].scrollIntoView(false);
-            await seeMore[0].click();
+        for(let i = 0; i < seeMore.length; i++) {
+            if(seeMore[i] && await seeMore[i].isExisting()) {
+                await seeMore[i].scrollIntoView(false);
+                await seeMore[i].click();
+            }
         }
     }
 
