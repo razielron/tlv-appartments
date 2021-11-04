@@ -7,10 +7,11 @@ let job = new CronJob('0 */30 8-00/1 * * *', function() {
 
     let isWin = process.platform.includes('win');
     let cmd = isWin ? 'npm.cmd' : 'npm';
-    let runCmd = isWin ? 'automation' : 'linux:automation';
+    let runFacebook = isWin ? 'facebook' : 'linux:facebook';
+    let runYad2 = isWin ? 'yas2' : 'linux:yad2';
     
-    const yad2 = spawn('node', ['./yad2/getPosts.js']);
-    const automation = spawn(cmd, ['run', runCmd + `:${process.env.NODE_ENV.trim()}`]);
+    const yad2 = spawn(cmd, ['run', runYad2 + `:${process.env.NODE_ENV.trim()}`]);
+    const automation = spawn(cmd, ['run', runFacebook + `:${process.env.NODE_ENV.trim()}`]);
 
     automation.stdout.on('data', (data) => {
       console.log(`${data}`);

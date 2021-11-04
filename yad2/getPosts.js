@@ -65,9 +65,9 @@ function sendData(postsArr) {
     }
 }
 
-async function processYad2() {
+async function processYad2(postsArr) {
     try {
-        let postsArr = await getData();
+        //let postsArr = await getData();
         postsArr = buildPostData(postsArr);
         postsArr = await filterExistingPosts(postsArr);
         if(postsArr.length) {
@@ -79,9 +79,14 @@ async function processYad2() {
         }
     } catch(e) {
         console.log(e);
+        bot.sendMessage(config.channelId, `Yad2\n${e}`);
     }
 }
 
-(async () => {
+/* (async () => {
     await processYad2();
-})();
+})(); */
+
+module.exports = {
+    processYad2
+}
