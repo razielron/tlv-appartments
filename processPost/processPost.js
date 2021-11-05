@@ -24,14 +24,14 @@ function sendMatchMessage(postData) {
 
 async function processMatch(postData) {
     MatchPostsCount++;
-    postData['postNum'] = await mongoClient.getLastPostId(true) + 1;
+    postData['postNum'] = await mongoClient.getLastPostId(config.mongodb.matchCollection) + 1;
     sendMatchMessage(postData);
     await mongoClient.saveMatchPost(postData);
 }
 
 async function processUnmatch(postData) {
     UnmatchPostsCount++;
-    postData['postNum'] = await mongoClient.getLastPostId(false) + 1;
+    postData['postNum'] = await mongoClient.getLastPostId(config.mongodb.unmatchCollection) + 1;
     await mongoClient.saveUnmatchPost(postData);
 }
 

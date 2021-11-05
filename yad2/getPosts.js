@@ -6,9 +6,8 @@ const config = require('../config');
 
 const mongoClient = new MongoClient();
 const bot = new TelegramBot(creds.telegramToken, {polling: true});
-let itemCounter = 0;
 
-async function getData() {
+async function getDataByApi() {
     let request = {
         method: 'get',
         url: config.yad2Urls[0]
@@ -19,14 +18,18 @@ async function getData() {
     return res.data.feed.feed_items;
 }
 
-function buildPostData(postsArr) {
+async function buildPostData(postsArr) {
     let tempPost, remakeArr = [];
+    let lastPostNum = await mongoClient.getLastPostId(config.mongodb.yad2Collection);
 
     for(let i = 0; i < postsArr.length; i++) {
+        let nowts = new Date();
+
         if(postsArr[i]['link_token']) {
             tempPost = {
-                foundts: new Date(),
-                postNum: itemCounter++,
+                foundts: nowts,
+                postNum: ++lastPostNum,
+                postId: postsArr[i]['id'],
                 postUrl: `https://www.yad2.co.il/s/c/${postsArr[i]['link_token']}`,
                 price: postsArr[i]['price'],
                 street: postsArr[i]['street'],
@@ -39,11 +42,25 @@ function buildPostData(postsArr) {
     return remakeArr;
 }
 
+async function removeDuplicates(postsArr) {
+    let dict = {}, postsNoDupArr = [];
+
+    for(let i = 0; i < postsArr.length; i++) {
+        dict[postsArr[i]['postId']] = i;
+    }
+
+    for (const [key, value] of Object.entries(dict)) {
+        postsNoDupArr.push(postsArr[value]);
+    }
+    //console.log({postsNoDupArr})
+    return postsNoDupArr;
+}
+
 async function filterExistingPosts(postsArr) {
     let isExists, remainArr = [];
 
     for(let i = 0; i < postsArr.length; i++) {
-        isExists = await mongoClient.isUrlExists(config.mongodb.yad2Collection, postsArr[i]['postUrl']);
+        isExists = await mongoClient.isIdExists(config.mongodb.yad2Collection, postsArr[i]['postId']);
         if(!isExists.length) remainArr.push(postsArr[i]);
     }
 
@@ -52,6 +69,8 @@ async function filterExistingPosts(postsArr) {
 
 function sendData(postsArr) {
     let message, postData;
+    
+    postsArr.sort((post1, post2) => { return post1['postNum'] - post2['postNum']; });
 
     for(let i = 0; i < postsArr.length; i++) {
         postData = postsArr[i];
@@ -65,11 +84,13 @@ function sendData(postsArr) {
     }
 }
 
-async function processYad2() {
+async function processYad2(postsArr) {
     try {
-        let postsArr = await getData();
-        postsArr = buildPostData(postsArr);
+        //let postsArr = await getDataByApi();
+        postsArr = await buildPostData(postsArr);
         postsArr = await filterExistingPosts(postsArr);
+        postsArr = await removeDuplicates(postsArr);
+
         if(postsArr.length) {
             console.log({postsArr});
             await mongoClient.saveYad2Posts(postsArr);
@@ -79,9 +100,14 @@ async function processYad2() {
         }
     } catch(e) {
         console.log(e);
+        bot.sendMessage(config.channelId, `Yad2\n${e}`);
     }
 }
 
-(async () => {
+/* (async () => {
     await processYad2();
-})();
+})(); */
+
+module.exports = {
+    processYad2
+}

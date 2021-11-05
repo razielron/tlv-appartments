@@ -5,12 +5,15 @@
   "main": "wdio.conf.js",
   "scripts": {
     "linux:cron:raziel": "export NODE_ENV=raziel && node cron.js",
-    "linux:cron:shahar": "export NODE_ENV=shahar && node cron.js",
     "cron:raziel": "set NODE_ENV=raziel && node cron.js",
+    "linux:facebook:raziel": "export NODE_ENV=raziel && npx wdio run ./wdio.conf.js --suite facebook",
+    "linux:yad2:raziel": "export NODE_ENV=raziel && npx wdio run ./wdio.conf.js --suite yad2",
+    "yad2:raziel": "set NODE_ENV=raziel && npx wdio run ./wdio.conf.local.js --suite yad2",
+
+    "linux:cron:shahar": "export NODE_ENV=shahar && node cron.js",
     "cron:shahar": "set NODE_ENV=shahar && node cron.js",
-    "linux:automation:raziel": "export NODE_ENV=raziel && npx wdio run ./wdio.conf.js",
-    "linux:automation:shahar": "export NODE_ENV=shahar && npx wdio run ./wdio.conf.js",
-    "linux:automation:ofri": "export NODE_ENV=ofri && npx wdio run ./wdio.conf.js",
+    "linux:facebook:shahar": "export NODE_ENV=shahar && npx wdio run ./wdio.conf.js",
+    "linux:facebook:ofri": "export NODE_ENV=ofri && npx wdio run ./wdio.conf.js",
     "automation:raziel": "set NODE_ENV=raziel && npx wdio run ./wdio.conf.js",
     "automation:shahar": "set NODE_ENV=shahar && npx wdio run ./wdio.conf.js",
     "automation:ofri": "set NODE_ENV=ofri && npx wdio run ./wdio.conf.js",
@@ -32,6 +35,7 @@
   "dependencies": {
     "@googlemaps/google-maps-services-js": "^3.2.6",
     "@wdio/cli": "^7.12.6",
+    "@wdio/devtools-service": "^7.16.4",
     "@wdio/repl": "^7.12.5",
     "axios": "^0.21.4",
     "child_process": "^1.0.2",

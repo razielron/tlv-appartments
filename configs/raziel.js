@@ -40,9 +40,17 @@ module.exports = {
         studio: false,
         unit: false
     },
-    yad2Urls: [
-        'https://www.yad2.co.il/api/pre-load/getFeedIndex/realestate/rent?topArea=2&area=1&city=5000&neighborhood=1461&property=1&rooms=3-3.5&price=6000-9000&forceLdLoad=true'
-    ],
+    yad2: {
+        apis: [
+            'https://www.yad2.co.il/api/pre-load/getFeedIndex/realestate/rent?topArea=2&area=1&city=5000&neighborhood=1461&property=1&rooms=3-3.5&price=6000-9000&forceLdLoad=true'
+        ],
+        urls: [
+            'https://www.yad2.co.il/realestate/rent?topArea=2&area=1&city=5000&neighborhood=1461&property=1&rooms=3-3.5&price=6001-9000'
+        ],
+        devtoolsApiSearch: [
+            'https://www.yad2.co.il/api/pre-load/getFeedIndex/realestate/rent?'
+        ]
+    },
     mongodb: {
         fullUrl: 'mongodb://rootuser:rootpass@mongodb:27017',
         url: 'mongodb://mongodb:27017',
