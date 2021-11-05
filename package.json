@@ -8,6 +8,8 @@
     "cron:raziel": "set NODE_ENV=raziel && node cron.js",
     "linux:facebook:raziel": "export NODE_ENV=raziel && npx wdio run ./wdio.conf.js --suite facebook",
     "linux:yad2:raziel": "export NODE_ENV=raziel && npx wdio run ./wdio.conf.js --suite yad2",
+    "yad2:raziel": "set NODE_ENV=raziel && npx wdio run ./wdio.conf.local.js --suite yad2",
+
     "linux:cron:shahar": "export NODE_ENV=shahar && node cron.js",
     "cron:shahar": "set NODE_ENV=shahar && node cron.js",
     "linux:facebook:shahar": "export NODE_ENV=shahar && npx wdio run ./wdio.conf.js",

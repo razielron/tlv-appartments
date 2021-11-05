@@ -1,4 +1,3 @@
-const MongodbClient = require ('./mongodb/mongodbClient');
 
 exports.config = {
     //
@@ -145,7 +144,7 @@ exports.config = {
     // Services take over a specific job you don't want to take care of. They enhance
     // your test setup with almost no effort. Unlike plugins, they don't add new
     // commands. Instead, they hook themselves up into the test process.
-    services: [['chromedriver', {hostname: "chrome", port: 4444}], 'devtools'],
+    services: ['chromedriver', 'devtools'],
     
     // Framework you want to run your specs with.
     // The following are supported: Mocha, Jasmine, and Cucumber
@@ -222,8 +221,6 @@ exports.config = {
      * @param {Array.<String>} specs List of spec file paths that are to be run
      */
     beforeSession: async function (config, capabilities, specs) {
-        let mongoClient = new MongodbClient();
-        await mongoClient.createCollections();
         global.runts = Date.now();
     },
     /**

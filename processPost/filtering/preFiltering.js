@@ -1,5 +1,5 @@
-const config = require('../../config');
 const stringSimilarity = require("string-similarity");
+const config = require('../../config');
 const MongoClient = require('../../mongodb/mongodbClient');
 
 const mongoClient = new MongoClient();
