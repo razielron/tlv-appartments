@@ -28,7 +28,7 @@ class MainPage {
     async seeMoreBtn(elem) { 
         return await elem.$$('div[role="button"]')
         .filter(async el => {
-            return ((await el.getText()) === 'See More');
+            return ((await el.getText()).toLowerCase().includes('see more'));
         });
     }
     async getImages(elem) { return elem.$$('img[class="i09qtzwb n7fi1qx3 datstx6m pmk7jnqg j9ispegn kr520xx4 k4urcfbm"]'); }

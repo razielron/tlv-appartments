@@ -30,7 +30,8 @@ class MongodbClient {
         queryRes = await queryRes.next();
         //console.log({queryRes});
         await this.client.close();
-        return queryRes ? queryRes.postNum : 0;
+        
+        return (queryRes && typeof(queryRes.postNum) === 'number') ? queryRes.postNum : 0;
     }
 
     async isUrlExists(collectionName, url) {
