@@ -83,7 +83,7 @@ exports.config = {
                 //'--remote-debugging-port=9222',
 
                 //
-                //'--window-size=1280,1024',
+                '--window-size=1280,1024',
                 '--start-maximized',
                 //'--port=4444'
             ],
