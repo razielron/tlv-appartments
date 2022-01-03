@@ -30,7 +30,7 @@ class MongodbClient {
         queryRes = await queryRes.next();
         //console.log({queryRes});
         await this.client.close();
-        
+
         return (queryRes && typeof(queryRes.postNum) === 'number') ? queryRes.postNum : 0;
     }
 

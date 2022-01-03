@@ -32,6 +32,8 @@ class MainPage {
         });
     }
     async getImages(elem) { return elem.$$('img[class="i09qtzwb n7fi1qx3 datstx6m pmk7jnqg j9ispegn kr520xx4 k4urcfbm"]'); }
+    get getTempClosed() { return $('div[aria-label="You’re Temporarily Blocked"]'); }
+    async tempClosedOkButton(elem) { return elem.$('div[class="rq0escxv l9j0dhe7 du4w35lb j83agx80 pfnyh3mw taijpn5t bp9cbjyn owycx6da btwxx1t3 kt9q3ron ak7q8e6j isp2s0ed ri5dt5u2 rt8b4zig n8ej3o3l agehan2d sk4xxmp2 d1544ag0 tw6a2znq s1i5eluu tv7at329"]'); }
 
     getCreatedDateFromUrl(url) {
         let tempIndex1 = url.indexOf('posts/') + 6;
@@ -161,8 +163,20 @@ class MainPage {
         }
     }
 
+    async closeTemporarilyBlocked() {
+        let tempClosedpopup = await this.getTempClosed;
+        let button;
+
+        if(await tempClosedpopup.isDisplayed()) {
+            button = await this.tempClosedOkButton(tempClosedpopup);
+            await button.click();
+        }
+    }
+
     async goOverArticles(maxArticles = 10) {
         let numOfPosts = 0, postText, currentPost, allPosts, postLinkElem, postLink;
+
+        this.closeTemporarilyBlocked();
         
         for(let i = 0; i < maxArticles; i++) {
             console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')

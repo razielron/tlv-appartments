@@ -10,7 +10,7 @@ const bot = new TelegramBot(creds.telegramToken, {polling: true});
 async function getDataByApi() {
     let request = {
         method: 'get',
-        url: config.yad2Urls[0]
+        url: config.yad2.apis[0]
     }
 
     let res = await axios(request);

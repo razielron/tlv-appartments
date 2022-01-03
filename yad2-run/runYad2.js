@@ -10,6 +10,7 @@ describe('Yad2 run', () => {
         await browser.on('Network.responseReceived', async (params) => {
             if(reqId !== params.requestId && params.response.url.includes(config.yad2.devtoolsApiSearch[0])) {
                 reqId = params.requestId;
+                //console.log({params});
                 res = await browser.cdp('Network', 'getResponseBody', {requestId: reqId});
                 res = JSON.parse(res.body);
                 //console.log(res.feed.feed_items);
@@ -20,8 +21,11 @@ describe('Yad2 run', () => {
 
     it('open search and track traffic', async () => {
         await MainPage.openSearch();
+        console.log('Yad2 opened');
         await MainPage.closeToolTip();
+        console.log('Toltip closed');
         await MainPage.search();
+        console.log('Search button clicked');
         await browser.pause(5000);
     });
 });
