@@ -1,9 +1,5 @@
 module.exports = {
     channelId: '@tlv_apartments',
-    matchPath: 'shaharMatch.json',
-    unmatchPath: 'shaharUnmatch.json',
-    singleRunMatchPath: 'singleRunMatch.json',
-    singleRunUnmatchPath: 'singleRunUnmatch.json',
     streetsDataPath: 'streetsData.json',
     groups: [
         'https://www.facebook.com/groups/403787519759673',
@@ -43,5 +39,26 @@ module.exports = {
         sablet: false,
         studio: false,
         unit: false
+    },
+    yad2: {
+        apis: [
+            'https://www.yad2.co.il/api/pre-load/getFeedIndex/realestate/rent?topArea=2&area=1&city=5000&neighborhood=1461&property=1&rooms=3-3.5&price=6000-8000&forceLdLoad=true'
+        ],
+        urls: [
+            'https://www.yad2.co.il/realestate/rent?topArea=2&area=1&city=5000&neighborhood=1461&property=1&rooms=3-3.5&price=6001-9000'
+        ],
+        devtoolsApiSearch: [
+            'https://www.yad2.co.il/api/pre-load/getFeedIndex/realestate/rent?'
+        ]
+    },
+    mongodb: {
+        fullUrl: 'mongodb://rootuser:rootpass@mongodb:27017',
+        url: 'mongodb://mongodb:27017',
+        dbName: 'tlvaptbot',
+        matchCollection: 'shaharMatch',
+        unmatchCollection: 'shaharUnmatch',
+        yad2Collection: 'shaharYad2',
+        userName: 'rootuser',
+        password: 'rootpass'
     }
 }
