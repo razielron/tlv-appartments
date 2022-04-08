@@ -1,5 +1,5 @@
 module.exports = {
-    channelId: '@tlv_apartments',
+    channelId: '@tlv_apartments2',
     streetsDataPath: 'streetsData.json',
     groups: [
         'https://www.facebook.com/groups/403787519759673',

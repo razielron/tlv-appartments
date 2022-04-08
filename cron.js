@@ -1,7 +1,12 @@
 const CronJob = require('cron').CronJob;
 const { spawn } = require("child_process");
 
-let job = new CronJob('0 0 8-00/1 * * *', function() {
+let defaultMin = process.env.CRON_MIN_START || '0';
+let cronTime = `0 ${defaultMin} 8-00/1 * * *`;
+console.log({ cronTime });
+printCurrentTime();
+
+let job = new CronJob(cronTime, function() {
     console.log("@@@@@ RUN STARTED @@@@@");
     console.log(process.platform);
 
@@ -22,6 +27,18 @@ let job = new CronJob('0 0 8-00/1 * * *', function() {
     });
 
 });
+
+function printCurrentTime() {
+  let currentdate = new Date(); 
+  let datetime = "Current Mechine Time: " + currentdate.getDate() + "/"
+    + (currentdate.getMonth()+1)  + "/" 
+    + currentdate.getFullYear() + " @ "  
+    + currentdate.getHours() + ":"  
+    + currentdate.getMinutes() + ":" 
+    + currentdate.getSeconds();
+
+  console.log({ datetime });
+}
 
 console.log("CRON STARTED");
 job.start();

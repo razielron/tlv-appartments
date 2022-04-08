@@ -37,6 +37,7 @@ services:
     environment:
       - NODE_ENV=raziel
       - TZ=Israel
+      - CRON_MIN_START=0
     volumes:
       - .:/usr/src/bot
 
